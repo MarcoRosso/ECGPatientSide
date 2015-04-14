@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_back" >
+  <RelativeLayout
+    android:id="@+id/welcomepart"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:background="@drawable/welcome_back" >
+      <TextView
+          android:id="@+id/welcome_name"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_centerHorizontal="true"
+          android:layout_marginTop="130dp"
+          android:textSize="17sp"
+          android:text="@string/welcome_name"
+          android:textColor="#FCFCFC" />
+      <TextView
+          android:id="@+id/welcome_roomnumber"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_centerHorizontal="true"
+          android:layout_below="@+id/welcome_name"
+          android:layout_marginTop="10dp"
+          android:textSize="17sp"
+          android:text="@string/welcome_roomnumber"
+          android:textColor="#FCFCFC" />"
+  </RelativeLayout>
+   <Button
+         android:id="@+id/menuone"
+         android:onClick="menuone"
+         android:layout_width="wrap_content"
+         android:layout_marginLeft="10dp"
+         android:layout_marginRight="10dp"
+         android:layout_height="60dp"
+         android:layout_below="@+id/welcomepart"
+         android:layout_marginTop="30dp"
+         android:background="@drawable/menuone"/>
+      <Button
+         android:onClick="menutwo"
+         android:id="@+id/menutwo"
+         android:layout_width="wrap_content"
+         android:layout_marginLeft="10dp"
+         android:layout_marginRight="10dp"
+         android:layout_height="60dp"
+         android:layout_below="@+id/menuone"
+         android:layout_marginTop="30dp"
+         android:background="@drawable/menutwo"/>
+      <Button
+         android:onClick="menuthree"
+         android:id="@+id/menuthree"
+         android:layout_width="wrap_content"
+         android:layout_marginLeft="10dp"
+         android:layout_marginRight="10dp"
+         android:layout_height="60dp"
+         android:layout_below="@+id/menutwo"
+         android:layout_marginTop="30dp"
+         android:background="@drawable/menuthree"/>
+      <Button
+         android:onClick="menufour"
+         android:id="@+id/menufour"
+         android:layout_width="wrap_content" 
+         android:layout_marginLeft="10dp"
+         android:layout_marginRight="10dp"
+         android:layout_height="60dp"
+         android:layout_below="@+id/menuthree"
+         android:layout_marginTop="30dp"
+         android:background="@drawable/menufour"/>
+
+
+
+</RelativeLayout>

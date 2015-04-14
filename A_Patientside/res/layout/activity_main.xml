@@ -1,0 +1,104 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/login_back"
+    tools:context="com.marco.a_patientside.MainActivity" >
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="120dp"    
+        android:layout_alignParentTop="true"
+        android:src="@drawable/decoration" />
+    <ImageView 
+        android:id="@+id/imageView1" 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/imageView2"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/title" />
+    <RelativeLayout
+        android:id="@+id/usernamepart"
+        android:layout_below="@+id/imageView1"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/editback"
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+      <ImageView 
+        android:id="@+id/userimg" 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/user" />"
+      <ImageView 
+        android:id="@+id/slash1" 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@+id/userimg" 
+        android:layout_centerVertical="true"
+        android:src="@drawable/slash" />
+      <EditText
+        android:id="@+id/username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/slash1" 
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="15dp" 
+        android:hint="@string/inputusername"
+        android:ems="10"/>
+       
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/passwordpart"
+        android:layout_below="@+id/usernamepart"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/editback"
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+      <ImageView 
+        android:id="@+id/passwordimg" 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/password" />
+      <ImageView 
+        android:id="@+id/slash2" 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@+id/passwordimg"
+        android:layout_centerVertical="true"
+        android:src="@drawable/slash" />
+        <EditText
+        android:id="@+id/password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/slash2" 
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="15dp" 
+        android:inputType="textPassword"
+        android:hint="@string/inputpassword"
+        android:ems="10"/>
+    </RelativeLayout>
+    <Button
+        android:id="@+id/login"
+        android:layout_below="@+id/passwordpart"
+        android:layout_marginTop="40dp"
+        android:layout_height="60dp"
+        android:layout_width="match_parent"
+        android:background="@drawable/login_button"
+        />
+
+
+</RelativeLayout>

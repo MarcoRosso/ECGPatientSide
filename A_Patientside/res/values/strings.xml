@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">PatientSide</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="username">用户名：</string>
+    <string name="usernameempty">用户名为空！</string>
+    <string name="inputusername">用户名</string>
+    <string name="inputpassword">密码</string>
+    <string name="empty">用户名或密码不能为空！</string>
+    <string name="loginsuccess">登陆成功！</string>
+    <string name="loginfailed">登陆失败,请检查网络连接及用户名密码是否正确</string>
+    <string name="welcome_name">,欢迎使用心电监测与报警系统</string>
+    <string name="welcome_roomnumber">你的房号是：</string>
+    <string name="emptypath">文件路径不能为空！</string>
+    <string name="fileuploadsuccess">文件上传成功!</string>
+    <string name="fileuploadfailed">文件上传失败!</string>
+    <string name="usergetsuccess">用户信息获取成功！</string>
+    <string name="usergetfailed">用户信息获取失败！请检查网络连接</string>
+    <string name="fileinfosuccess">文件信息保存成功！</string>
+    <string name="fileinfofailed">文件信息保存失败！请检查网络连接</string>
+    <string name="attachusersuccess">与用户关联成功！</string>
+    <string name="attachuserfailed">与用户关联失败！</string>
+
+</resources>

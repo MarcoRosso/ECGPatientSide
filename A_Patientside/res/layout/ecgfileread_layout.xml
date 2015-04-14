@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+<TextView
+    android:id="@+id/drawgraph"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentTop="true"
+    android:textColor="#FE0000"
+    android:textSize="35sp"
+    android:text="点此开始绘图" />
+<SurfaceView
+	android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/SurfaceView01"
+    ></SurfaceView>
+<TextView
+    android:id="@+id/drawgrapht"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentTop="true"
+    android:textColor="#FE0000"
+    android:textSize="25sp"
+    android:text="点此开始绘图" />
+<TextView
+    android:id="@+id/textView1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignTop="@+id/show"
+    android:layout_toLeftOf="@+id/show"
+    android:textColor="#FE0000"
+    android:textSize="35sp"
+    android:text="心率：" />
+<TextView
+    android:id="@+id/show"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentTop="true"
+    android:textColor="#FE0000"
+    android:textSize="35sp"
+    android:layout_marginRight="10dp"
+    android:text="XXX" />
+<TextView
+    android:id="@+id/drawnumber" 
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentBottom="true"
+    android:textColor="#FE0000"
+    android:textSize="25sp"
+    android:text="共XX屏，当前是XX屏" />
+</RelativeLayout>
