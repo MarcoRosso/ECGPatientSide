@@ -5,13 +5,14 @@ import cn.bmob.v3.BmobObject;
 public class Filename extends BmobObject{
     private String filename;
     private String realname;
+	private PatientUser user;
     public String getRealname() {
 		return realname;
 	}
 	public void setRealname(String realname) {
 		this.realname = realname;
 	}
-	private PatientUser user;
+
 	public String getFilename() {
 		return filename;
 	}

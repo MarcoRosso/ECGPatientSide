@@ -22,5 +22,6 @@
     <string name="fileinfofailed">文件信息保存失败！请检查网络连接</string>
     <string name="attachusersuccess">与用户关联成功！</string>
     <string name="attachuserfailed">与用户关联失败！</string>
+    <string name="downloadqueryfailed">查询关联信息失败,您可能没有在云端保存文件或请检查网络连接！</string>
 
 </resources>

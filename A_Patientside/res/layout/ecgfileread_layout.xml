@@ -12,6 +12,25 @@
     android:textColor="#FE0000"
     android:textSize="35sp"
     android:text="点此开始绘图" />
+<TextView
+    android:id="@+id/pre"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_toLeftOf="@+id/nex"
+    android:layout_alignTop="@+id/nex"
+    android:textColor="#FE0000"
+    android:layout_marginRight="20dp"
+    android:textSize="25sp"
+    android:text="上一屏" />
+<TextView
+    android:id="@+id/nex"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentBottom="true"
+    android:textColor="#FE0000"
+    android:textSize="25sp"
+    android:text="下一屏" />
 <SurfaceView
 	android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -54,4 +73,23 @@
     android:textColor="#FE0000"
     android:textSize="25sp"
     android:text="共XX屏，当前是XX屏" />
+<TextView
+    android:id="@+id/previous"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_toLeftOf="@+id/next"
+    android:layout_alignTop="@+id/next"
+    android:textColor="#FE0000"
+    android:layout_marginRight="20dp"
+    android:textSize="25sp"
+    android:text="上一屏" />
+<TextView
+    android:id="@+id/next"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentBottom="true"
+    android:textColor="#FE0000"
+    android:textSize="25sp"
+    android:text="下一屏" />
 </RelativeLayout>

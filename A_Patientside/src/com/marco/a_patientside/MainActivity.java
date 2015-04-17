@@ -4,6 +4,7 @@ package com.marco.a_patientside;
 
 
 
+import java.io.File;
 import java.util.List;
 
 import com.marco.constant.PatientUser;
@@ -17,6 +18,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -41,6 +43,15 @@ public class MainActivity extends Activity {
         usernameEdittext.setText("张三");
         passwordEdittext.setText("test");
         Bmob.initialize(this, "540ce211a2e2d4de0350b0b92cef5ebf");
+		 File file = null;
+		    try {
+		        file = new File("/sdcard/ECG/");
+		        if (!file.exists()) {
+		            file.mkdir();
+		        }
+		    } catch (Exception e) {
+		        Log.i("error:", e+"");
+		    }
         loginbutton.setOnClickListener(new OnClickListener(){
 
 			@Override
@@ -78,15 +89,19 @@ public class MainActivity extends Activity {
 						query.findObjects(MainActivity.this, new FindListener<PatientUser>() {
 						    @Override
 						    public void onSuccess(List<PatientUser> object) {
+                            	pd.dismiss();
                                 for(PatientUser patientuser:object){
+                                	boolean isuse=patientuser.isInUse();
+                                	if(isuse){
                                 	roomnumber=patientuser.getRoomnumber();
-                                	pd.dismiss();
             						Intent intent= new Intent();
             						intent.putExtra("username", usernames);
             						intent.putExtra("roomnumber", roomnumber);
             						intent.setClass(MainActivity.this, ContactActivity.class);
             						startActivity(intent);
-            		        		finish();	
+            		        		finish();
+            		        		}else
+            		        	   Toast.makeText(MainActivity.this, "您的账号已被注销", Toast.LENGTH_SHORT).show();
                                 }
 						    }
 						    @Override

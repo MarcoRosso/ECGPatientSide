@@ -6,6 +6,17 @@ import cn.bmob.v3.datatype.BmobRelation;
 public class PatientUser extends BmobUser{
 	private String roomnumber;
     private BmobRelation filename;
+    private boolean inUse;
+
+
+	public boolean isInUse() {
+		return inUse;
+	}
+
+	public void setInUse(boolean inUse) {
+		this.inUse = inUse;
+	}
+
 	public BmobRelation getFilename() {
 		return filename;
 	}

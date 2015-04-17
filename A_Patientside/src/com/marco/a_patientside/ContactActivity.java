@@ -68,7 +68,7 @@ public class ContactActivity extends Activity  {
 	        name=intent.getStringExtra("username");
 	        String roomnumber=intent.getStringExtra("roomnumber");
 	        welcome_name.setText(name+",欢迎使用心电监测与报警系统");
-	        welcome_roomnumber.setText("你的病房号是："+roomnumber);
+	        welcome_roomnumber.setText("你的病床号是："+roomnumber);
 	        
 	        
     		if(!isMyServiceRunning()&&servicesetting)
@@ -174,6 +174,7 @@ public class ContactActivity extends Activity  {
 	 public void menutwo(View view){
 		    Intent intent= new Intent();
 		    intent.putExtra("username", name);
+		    intent.putExtra("readpath", "/sdcard/ECG/QRS.txt");
 		    intent.setClass(ContactActivity.this, ECGShow.class);
 		    startActivity(intent);
 	 }

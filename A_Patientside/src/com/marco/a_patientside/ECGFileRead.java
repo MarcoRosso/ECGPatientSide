@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import com.marco.dataprocess.FilterProcess;
 import com.marco.dataprocess.QRSProcess;
@@ -103,9 +105,10 @@ public class ECGFileRead extends Activity{
  		    	hnumber2=0.0f;
  		    	calculate=0;
  		    	DrawGrid();
- 		      mTimer = new Timer();
- 		      mTimerTask = new MyTimerTask();
- 		      mTimer.schedule(mTimerTask, 0, 1);
+
+ 		     mTimer = new Timer();
+ 		     mTimerTask = new MyTimerTask();
+ 		     mTimer.schedule(mTimerTask, 0, 1);
  	    	    drewcount++;
  	            drawnumber.setText("共"+Integer.toString(drawcount)+"屏，现在是第"+
  	                    Integer.toString(drewcount)+"屏");
