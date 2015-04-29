@@ -5,13 +5,12 @@
     >
 <TextView
     android:id="@+id/drawgraph"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignParentLeft="true"
-    android:layout_alignParentTop="true"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_centerInParent="true"
     android:textColor="#FE0000"
     android:textSize="35sp"
-    android:text="点此开始绘图" />
+    android:text="点击屏幕绘图" />
 <TextView
     android:id="@+id/pre"
     android:layout_width="wrap_content"
@@ -31,20 +30,77 @@
     android:textColor="#FE0000"
     android:textSize="25sp"
     android:text="下一屏" />
-<SurfaceView
-	android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:id="@+id/SurfaceView01"
-    ></SurfaceView>
 <TextView
-    android:id="@+id/drawgrapht"
+    android:id="@+id/counttex"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_alignParentLeft="true"
     android:layout_alignParentTop="true"
     android:textColor="#FE0000"
     android:textSize="25sp"
-    android:text="点此开始绘图" />
+    android:text="心率计算：" />
+<TextView
+    android:id="@+id/bac"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_toRightOf="@+id/counttext"
+    android:layout_alignParentTop="true"
+    android:layout_marginLeft="10dp"
+    android:textColor="#FE0000"
+    android:textSize="25sp"
+    android:text="前移2秒" />
+<TextView
+    android:id="@+id/forw"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_toRightOf="@+id/bac"
+    android:layout_marginLeft="20dp"
+    android:layout_alignParentTop="true"
+    android:textColor="#FE0000"
+    android:textSize="25sp"
+    android:text="后移2秒" />
+<SurfaceView
+	android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/SurfaceView01"
+    ></SurfaceView>
+<TextView
+    android:id="@+id/counttext"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentTop="true"
+    android:textColor="#FE0000"
+    android:textSize="25sp"
+    android:text="心率计算：" />
+<TextView
+    android:id="@+id/back"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_toRightOf="@+id/counttext"
+    android:layout_alignParentTop="true"
+    android:textColor="#FE0000"
+    android:textSize="25sp"
+    android:text="前移2秒" />
+<TextView
+    android:id="@+id/forward"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_toRightOf="@+id/back"
+    android:layout_marginLeft="20dp"
+    android:layout_alignParentTop="true"
+    android:textColor="#FE0000"
+    android:textSize="25sp"
+    android:text="后移2秒" />
+<TextView
+    android:id="@+id/drawgrapht"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:textColor="#FE0000"
+    android:textSize="35sp"
+    android:text="点击屏幕绘图"  />
 <TextView
     android:id="@+id/textView1"
     android:layout_width="wrap_content"
@@ -54,6 +110,16 @@
     android:textColor="#FE0000"
     android:textSize="35sp"
     android:text="心率：" />
+<TextView
+    android:id="@+id/ecgperiod"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:layout_marginRight="5dp"
+    android:layout_toLeftOf="@+id/textView1"
+    android:textColor="#FE0000"
+    android:textSize="20sp"
+    android:text="1-12秒" />
 <TextView
     android:id="@+id/show"
     android:layout_width="wrap_content"

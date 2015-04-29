@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+     >
+ <Button
+       android:id="@+id/button3"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_alignParentLeft="true"
+       android:layout_alignParentTop="true"
+       android:layout_toRightOf="@+id/radioButton1"
+       android:text="搜索设备并连接" />  
+ <EditText
+       android:id="@+id/edit_text_out"
+       android:layout_alignParentTop="true"
+       android:layout_toRightOf="@+id/button3"
+       android:layout_width="150dp"
+       android:layout_height="wrap_content"/>
+ <Button
+       android:id="@+id/button_send"
+       android:layout_alignParentTop="true"
+       android:layout_toRightOf="@+id/edit_text_out"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="发送消息" />
+<TextView android:id="@+id/title_right_text"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        android:text="title"
+    />
+ <ListView
+        android:id="@+id/in"
+        android:layout_below="@+id/button3"
+        android:layout_width="115dp"
+        android:layout_height="match_parent"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll" >
+ </ListView>
+    <SurfaceView
+    android:layout_toRightOf="@+id/in"
+    android:layout_alignTop="@+id/in"
+	android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/SurfaceView01"
+    ></SurfaceView>
+    <TextView
+    android:id="@+id/textView1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignTop="@+id/show"
+    android:layout_toLeftOf="@+id/show"
+    android:textColor="#FE0000"
+    android:textSize="35sp"
+    android:text="心率：" />
+<TextView
+    android:id="@+id/show"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentBottom="true"
+    android:textColor="#FE0000"
+    android:textSize="35sp"
+    android:layout_marginRight="10dp"
+    android:text="XXX" />
+</RelativeLayout>

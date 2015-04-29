@@ -392,8 +392,8 @@ public class OtherFunction extends Activity{
          Intent intent= new Intent();
          intent.setClass(OtherFunction.this, OtherFunction.class);
          intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-         startActivity(intent);
          finish();
+         startActivity(intent);
          overridePendingTransition(0, 0);
 	}
 	private void uploadfile(){

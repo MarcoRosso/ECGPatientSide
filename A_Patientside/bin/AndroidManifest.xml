@@ -32,6 +32,8 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
     <uses-permission android:name="android.permission.READ_LOGS"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="14" />
@@ -66,6 +68,7 @@
         </activity>
            <activity
              android:name=".OtherFunction"
+              android:launchMode="singleTask"
              android:screenOrientation="portrait"
              />
            <activity
@@ -75,6 +78,17 @@
            <activity
              android:name=".ECGFileRead"
              android:screenOrientation="landscape"             
+             />
+           <activity
+             android:name=".OffLineRead"
+             android:screenOrientation="landscape"             
+             />
+           <activity
+             android:label="连接设备"
+             android:name=".DeviceListActivity"
+             android:screenOrientation="landscape" 
+             android:theme="@android:style/Theme.Dialog"
+             android:configChanges="orientation|keyboardHidden"             
              />
            <activity
              android:name=".AlertAction"

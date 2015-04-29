@@ -161,9 +161,10 @@ public class ContactActivity extends Activity  {
 
 
 	 public void menuone(View view){
-		 PackageManager packageManager =getPackageManager();
-         Intent intent = packageManager.getLaunchIntentForPackage("com.example.android.BluetoothChat");
-         startActivity(intent);
+		    Intent intent= new Intent();
+			intent.putExtra("username", name);
+			intent.setClass(ContactActivity.this, OffLineRead.class);
+			startActivity(intent);
 	 }
 	 public void menuthree(View view){
 		    Intent intent= new Intent();

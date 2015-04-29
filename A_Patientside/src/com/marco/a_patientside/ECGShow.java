@@ -117,7 +117,7 @@ public class ECGShow extends Activity{
     };
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ecgfileread_layout);
+        setContentView(R.layout.ecgshow_layout);
         getActionBar().hide();
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "My Tag"); 
@@ -127,7 +127,7 @@ public class ECGShow extends Activity{
         drawnumber=(TextView)findViewById(R.id.drawnumber);
         sfv = (SurfaceView)findViewById(R.id.SurfaceView01);
         
-        sfh = sfv.getHolder();
+        sfh = sfv.getHolder(); 
         centerY = (getWindowManager().getDefaultDisplay().getHeight()-sfv.getTop()) / 2;
 
         Intent intent=getIntent();
