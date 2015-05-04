@@ -33,8 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/logo"
         android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"    
+        android:layout_marginLeft="10dp"  
         android:text="紧急报警监测到您可能发生了"
         android:textColor="#A4A4A4"
         android:textSize="15sp"
@@ -47,7 +46,7 @@
         android:layout_alignBottom="@+id/alertword"
         android:text="撞击！"
         android:textColor="#D01B22"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textStyle="bold" />
       <TextView
         android:id="@+id/gps"

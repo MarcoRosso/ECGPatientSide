@@ -102,7 +102,7 @@ public class AlertAction extends Activity {
 	private TextView titletv;
 	private MediaPlayer mMediaPlayer;
 	SharedPreferences preferences;
-	
+    private int volumenow;
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
@@ -127,9 +127,9 @@ public class AlertAction extends Activity {
 		titletv.setText("报警功能正在工作！");
 		switch(type){
 		case 0: 
-			    msg="我可能遇到火灾，请迅速联系我！以下是我的位置信息："+"\n经度："+latitude+"\n纬度："+longitude+"\n可能的地址："+address;
+			    msg="我可能心跳过慢，请迅速联系我！以下是我的位置信息："+"\n经度："+latitude+"\n纬度："+longitude+"\n可能的地址："+address;
 		case 1: 
-			    msg="我可能急速下坠，请迅速联系我！以下是我的位置信息："+"\n经度："+latitude+"\n纬度："+longitude+"\n可能的地址："+address;
+			    msg="我可能心跳过快，请迅速联系我！以下是我的位置信息："+"\n经度："+latitude+"\n纬度："+longitude+"\n可能的地址："+address;
 		case 2: 
 			    msg="我可能遭到撞击，请迅速联系我！以下是我的位置信息："+"\n经度："+latitude+"\n纬度："+longitude+"\n可能的地址："+address;
 		}
@@ -151,8 +151,16 @@ public class AlertAction extends Activity {
 		    Toast.makeText(AlertAction.this, "您未填写有效号码，报警短息无法发送！" , Toast.LENGTH_SHORT).show();
 			else
 			Toast.makeText(AlertAction.this, count+"条报警信息已发送!" , Toast.LENGTH_SHORT).show();
-		
-		
+		    
+		    AudioManager am = (AudioManager) AlertAction.this.getSystemService(Context.AUDIO_SERVICE);
+		    volumenow=am.getStreamVolume(AudioManager.STREAM_MUSIC);
+	        int max = am.getStreamMaxVolume( AudioManager.STREAM_MUSIC );
+	        am.setSpeakerphoneOn(true);
+	        am.setMicrophoneMute(false);   
+	        am.setStreamVolume(AudioManager.STREAM_MUSIC, max,      
+	                AudioManager.FLAG_PLAY_SOUND);
+	        am.setMode(AudioManager.STREAM_MUSIC);
+	        
 	        mMediaPlayer=new MediaPlayer();
 	        mMediaPlayer=MediaPlayer.create(this, R.raw.alertbeep);
 	        if (!mMediaPlayer.isPlaying())
@@ -166,10 +174,7 @@ public class AlertAction extends Activity {
 			}
 	        mMediaPlayer.setLooping(true);
 	        mMediaPlayer.start();
-	        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-	        int max = am.getStreamMaxVolume( AudioManager.STREAM_MUSIC );
-	        am.setStreamVolume(AudioManager.STREAM_MUSIC, max,      
-	                AudioManager.FLAG_PLAY_SOUND); 
+
 	        }
 		
 		
@@ -205,16 +210,18 @@ public class AlertAction extends Activity {
 	}
 	
 
-    public void onDestroy() 
+    protected void onDestroy() 
 	{
         super.onDestroy();
-
     	show_handler.removeCallbacks(show_runnable);
     	m_Camera.release();
-        
-  	     if (mMediaPlayer.isPlaying())
+	    AudioManager am = (AudioManager) AlertAction.this.getSystemService(Context.AUDIO_SERVICE);
+	    am.setStreamVolume(AudioManager.STREAM_MUSIC, volumenow,      
+                AudioManager.FLAG_PLAY_SOUND);
+  	     if (mMediaPlayer.isPlaying()){
+  	    	 mMediaPlayer.stop();
  		     mMediaPlayer.release();
-
+  	     }
     }
     protected void onResume() {
         super.onResume();
@@ -226,6 +233,11 @@ public class AlertAction extends Activity {
         Intent intent= new Intent();
         intent.setClass(AlertAction.this, FallDownService.class);
     	stopService(intent);
+    }
+	protected void onPause(){
+		super.onPause();
+ 	     if (mMediaPlayer.isPlaying())
+		     mMediaPlayer.release();
 	}
 	public void setBrightness(float f){
 		WindowManager.LayoutParams lp = getWindow().getAttributes();

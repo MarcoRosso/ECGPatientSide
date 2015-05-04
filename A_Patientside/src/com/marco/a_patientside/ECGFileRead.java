@@ -134,9 +134,12 @@ public class ECGFileRead extends Activity{
         frecount=(int)(temp1);
         frenumber=getWindowManager().getDefaultDisplay().getWidth()/frecount;
         volnumber=getWindowManager().getDefaultDisplay().getHeight()/50;
-        
     	readonetime=frenumber*0.2*fre;
-    	double drawtemp=linecount/readonetime;
+    	int drawtemp=(int) ((linecount-1)/readonetime);
+    	int afterdot=(int) ((linecount-1)%readonetime);
+    	if(afterdot==0)
+    	drawcount=(int)drawtemp;
+    	else
     	drawcount=(int)drawtemp+1;
         
         draw.setOnClickListener(new OnClickListener(){
@@ -354,7 +357,7 @@ public class ECGFileRead extends Activity{
                msg.setData(bundle);//mes利用Bundle传递数据   
                mHandler.sendMessage(msg);
        		}else{
-   	        	if(fre*(calculate+12)>linecount){
+   	        	if(fre*(calculate+12)>linecount-1){
                         return;
    		        }else{
    		        	String readdata=ReadTxtFile(filepath,fre*calculate+1,

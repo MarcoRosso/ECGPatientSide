@@ -188,6 +188,101 @@
          android:background="@drawable/download_button"
          />
     </RelativeLayout>
+    <RelativeLayout 
+        android:layout_marginTop="20dp" 
+        android:layout_width="match_parent" 
+        android:layout_height="wrap_content">
+     <ImageView
+        android:id="@+id/hralert_title"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/hralert_back"
+         />
+     <Button
+        android:id="@+id/hralertswitch"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:background="@drawable/switch_on"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"/>
+     <TextView 
+        android:id="@+id/hralert_middle"
+        android:text="     您可以在此设置离线使用心电监测设备时,当心率过低或过高时,是否发出报警及报警的阈值。"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="15dp"
+        android:textColor="#98A2B0"
+        android:layout_below="@+id/hralert_title"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:background="#FFFFFF" 
+         />
+      <TextView
+        android:id="@+id/hralert_mi"
+        android:gravity="center"
+        android:text="最低心率："
+        android:textColor="#98A2B0"
+        android:textSize="20sp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="70dp"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/hralert_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+         />
+     <EditText
+        android:id="@+id/hralert_min"
+        android:maxLength="3"
+        android:gravity="center"
+        android:textColor="#98A2B0"
+        android:textSize="20sp"
+        android:numeric="integer"
+        android:layout_toRightOf="@+id/hralert_mi"
+        android:layout_marginTop="60dp"
+        android:layout_marginLeft="5dp"
+        android:layout_below="@+id/hralert_title"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/upload_filechoose"
+         />
+       <TextView
+        android:id="@+id/hralert_ma"
+        android:gravity="center"
+        android:text="最高心率："
+        android:textColor="#98A2B0"
+        android:textSize="20sp"
+        android:layout_toRightOf="@+id/hralert_min"
+        android:layout_marginTop="70dp"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/hralert_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+         />
+     <EditText
+        android:id="@+id/hralert_max"
+        android:maxLength="3"
+        android:gravity="center"
+        android:numeric="integer"
+        android:textColor="#98A2B0"
+        android:textSize="20sp"
+        android:layout_toRightOf="@+id/hralert_ma"
+        android:layout_marginTop="60dp"
+        android:layout_marginLeft="5dp"
+        android:layout_below="@+id/hralert_title"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/upload_filechoose"
+         />
+     <Button
+         android:id="@+id/hralert_confirm"
+         android:onClick="hralert_confirm"
+         android:layout_below="@+id/hralert_middle"
+         android:layout_width="match_parent"
+         android:layout_height="50dp"
+         android:background="@drawable/hralert_button"
+         />
+    </RelativeLayout>
          <RelativeLayout 
         android:layout_marginTop="20dp" 
         android:layout_width="match_parent" 
@@ -203,6 +298,7 @@
         android:layout_marginRight="10dp"/>
 
     </RelativeLayout> 
+
 
       <RelativeLayout 
         android:layout_marginTop="20dp" 

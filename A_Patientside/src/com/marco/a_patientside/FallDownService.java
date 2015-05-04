@@ -36,7 +36,7 @@ public class FallDownService extends Service {
 	private int type=2;
 	private boolean accavoidshake=true;
 	private boolean accable=true;
-	private float maxacc=13.0f;
+	private float maxacc=12.0f;
 	private String latitude="正在获取.....";
 	private String longitude="正在获取.....";
 	private String address="打开数据或WiFi连接互联网获取";
@@ -96,7 +96,6 @@ public class FallDownService extends Service {
                 sb.append(location.getLongitude());
                 sb.append("\nRadius : ");
                 sb.append(location.getRadius());
-                System.out.println(location.getLocType());
                 if (location.getLocType() == BDLocation.TypeGpsLocation){
                     sb.append("\nSpeed : ");
                     sb.append(location.getSpeed());

@@ -9,6 +9,21 @@ package com.marco.a_patientside;
 
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.RandomAccessFile;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+import com.baidu.location.LocationClientOption.LocationMode;
 import com.marco.dataprocess.BluetoothChatService;
 import com.marco.dataprocess.FilterProcess;
 import com.marco.dataprocess.QRSProcess;
@@ -18,6 +33,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -58,11 +74,23 @@ public class OffLineRead extends Activity{
     private int calamount=0;
     private int calchange=0;
     private int linepos=0;
+	private int writeamount=0;
     private int  centerY,vline=0,hline=0,hline2=0,volnumber=0,oldX,oldY,Y_axis[],y=0;
+    private int maxhr;
+    private int minhr;
     private double readdata[];
     private double ecgcal[];
-    private boolean startroll=false;
+    private boolean creatfile=false;
     private boolean begincal=true;
+    private Boolean hralertswitchcondition;
+    private String filename;
+    SharedPreferences preferences;
+	private String latitude="正在获取.....";
+	private String longitude="正在获取.....";
+	private String address="打开数据或WiFi连接互联网获取";
+	private LocationClient locationClient = null;
+	private static final int UPDATE_TIME = 5000;
+	private static int LOCATION_COUTNS = 0;
     
 	// Message types sent from the BluetoothChatService Handler
 	public static final int MESSAGE_STATE_CHANGE = 1;
@@ -94,6 +122,15 @@ public class OffLineRead extends Activity{
     	public void handleMessage(Message msg){
             if(msg.what==0x112){
     	    	ecgshow.setText(msg.getData().getString("HR","XXX"));
+    	    	int hr=Integer.parseInt(msg.getData().getString("HR","0"));
+    	    	if(hralertswitchcondition){
+        	    	if(!(hr==0)){
+        	    		if(hr<minhr)
+        	    			alert(0);
+        	    		else if(hr>maxhr)
+        	    			alert(1);
+        	    	}
+    	    	}
     	    }
     	}
     };
@@ -107,6 +144,21 @@ public class OffLineRead extends Activity{
         double temp=fre;
         double temp1=0.2/(1/temp);
         frecount=(int)(temp1);
+        preferences = getSharedPreferences("setting", MODE_PRIVATE);
+		maxhr=Integer.parseInt(preferences.getString("hralertmax", "150"));
+		minhr=Integer.parseInt(preferences.getString("hralertmin", "45"));
+		hralertswitchcondition=preferences.getBoolean("hralertswitch", true);
+		
+		locationClient = new LocationClient(this);
+        LocationClientOption option = new LocationClientOption();
+        option.setOpenGps(true);        //是否打开GPS
+        option.setCoorType("gcj02");       //设置返回值的坐标类型。
+        option.setLocationMode(LocationMode.Battery_Saving);  //设置定位优先级
+        option.setProdName("LocationDemo"); //设置产品线名称。强烈建议您使用自定义的产品线名称，方便我们以后为您提供更高效准确的定位服务。
+        option.setScanSpan(UPDATE_TIME);    //设置定时定位的时间间隔。单位毫秒
+        option.setIsNeedAddress(true);
+        locationClient.setLocOption(option);
+        
         sfv = (SurfaceView)findViewById(R.id.SurfaceView01);       
         sfh = sfv.getHolder();
         sfh.addCallback(new Callback()  {
@@ -120,24 +172,54 @@ public class OffLineRead extends Activity{
 			    hline=centerY;
 			    hline2=centerY;
 		        DrawGrid();
-		        System.out.println("width"+sfv.getWidth());
 		        readdata=new double[sfv.getWidth()];
+				mWakeLock.acquire(); 
 			}
-
-			@Override
 			public void surfaceChanged(SurfaceHolder holder, int format,
-					int width, int height) {
-				// TODO Auto-generated method stub
-				
+					int width, int height) {				
 			}
-
-			@Override
 			public void surfaceDestroyed(SurfaceHolder holder) {
-				// TODO Auto-generated method stub
-				
-			}
-        	
+			}        	
         });
+        
+        locationClient.registerLocationListener(new BDLocationListener() {         
+            @Override
+            public void onReceiveLocation(BDLocation location) {
+                // TODO Auto-generated method stub
+                if (location == null) {
+                    return;
+                }
+                StringBuffer sb = new StringBuffer(256);
+                sb.append("Time : ");
+                sb.append(location.getTime());
+                sb.append("\nError code : ");
+                sb.append(location.getLocType());
+                sb.append("\nLatitude : ");
+                latitude=String.valueOf(location.getLatitude());
+                sb.append(location.getLatitude());
+                sb.append("\nLontitude : ");
+                longitude=String.valueOf(location.getLongitude());
+                sb.append(location.getLongitude());
+                sb.append("\nRadius : ");
+                sb.append(location.getRadius());
+                if (location.getLocType() == BDLocation.TypeGpsLocation){
+                    sb.append("\nSpeed : ");
+                    sb.append(location.getSpeed());
+                    sb.append("\nSatellite : ");
+                    sb.append(location.getSatelliteNumber());
+                } else if (location.getLocType() == BDLocation.TypeNetWorkLocation){
+                    sb.append("\nAddress : ");
+                    address=location.getAddrStr();
+                    sb.append(location.getAddrStr());
+                }
+                LOCATION_COUTNS ++;
+                sb.append("\n检查位置更新次数：");
+                sb.append(String.valueOf(LOCATION_COUTNS));
+            }                    
+        });
+           locationClient.start(); 
+           locationClient.requestLocation();
+           
 		// Get local Bluetooth adapter
         ecgshow=(TextView)findViewById(R.id.show);
 		mTitle = (TextView) findViewById(R.id.title_right_text);
@@ -182,6 +264,16 @@ public class OffLineRead extends Activity{
 			}
 		}
 	}
+    public void alert (int typein){
+     	Intent intent  = new Intent();
+     	intent.putExtra("type", typein);
+     	intent.putExtra("latitude", latitude);
+     	intent.putExtra("longitude", longitude);
+     	intent.putExtra("address", address);
+     	intent.setClass(OffLineRead.this,AlertDialog.class);
+   	    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+     	startActivity(intent);
+   }
 	protected void onDestroy() {
 		super.onDestroy();
 		// Stop the Bluetooth chat services
@@ -472,17 +564,23 @@ public class OffLineRead extends Activity{
 				byte[] readBuf = (byte[]) msg.obj;
 				// construct a string from the valid bytes in the buffer
 				String readMessage = new String(readBuf, 0, msg.arg1);
-				//mConnectedDeviceName + ":  "
 				mConversationArrayAdapter.add(readMessage);
+				if(!creatfile){
+					filename=gettime();
+					startfile(Integer.toString(fre),filename);
+					creatfile=true;
+				}
+				writefile(filename,readMessage);
 				String[] temp1=readMessage.split("\n");
 				int leftthing=temp1.length%10;
-				int readamountonce=temp1.length-leftthing;
+				int readamountonce=temp1.length-leftthing;				
 				if(calamount<fre*12){
 				   for(int i=calamount;i<readamountonce+calamount;i++){
 					   if(isDouble(temp1[i-calamount]))
 					   ecgcal[i]=Double.parseDouble(temp1[i-calamount]);
 				   }
 				   calamount=calamount+readamountonce;
+				   writeamount=writeamount+readamountonce;
 				}else{
 					  int readtemp=0;
 				      for(int i=readamountonce;i<fre*12;i++){
@@ -505,6 +603,12 @@ public class OffLineRead extends Activity{
 					      HRCal();
 					      calchange=0;
 				      }
+				      writeamount=writeamount+readamountonce;
+				}
+				
+				if(writeamount==(60*fre)){
+					creatfile=false;
+					writeamount=0;
 				}
 			    if (readamountonce+readamount>sfv.getWidth()) 
 			    	readamount=0;			    
@@ -553,7 +657,6 @@ public class OffLineRead extends Activity{
 				}catch(Exception e){
 					
 				}*/
-				mWakeLock.acquire(); 
 				break;
 			case MESSAGE_DEVICE_NAME:
 				// save the connected device's name
@@ -570,6 +673,48 @@ public class OffLineRead extends Activity{
 			}
 		}
 	};
+	public String gettime()
+	{
+	  Date date=new Date();
+	  DateFormat format=new SimpleDateFormat("yyyyMMdd-HHmmss");
+	  String time=format.format(date);
+	  return time;
+	}
+	 public void startfile(String s,String name)
+    {
+	  try 
+	  {
+	   FileOutputStream outStream = new FileOutputStream("/sdcard/ECG/"+name+".txt",true);
+	   OutputStreamWriter writer = new OutputStreamWriter(outStream,"UTF-8");
+	   writer.write(s);
+	   writer.write("\n");
+	   writer.flush();
+	   writer.close();//记得关闭
+	   outStream.close();
+	  } 
+	  catch (Exception e)
+	  {
+	   Toast.makeText(OffLineRead.this, "文件创建错误", Toast.LENGTH_SHORT).show();
+	  } 
+   }
+	 public void writefile(String name,String content){
+		 File targetFile=new File("/sdcard/ECG/"+name+".txt");
+		 try {
+			RandomAccessFile raf=new RandomAccessFile(targetFile,"rw");
+			try {
+				raf.seek(targetFile.length());
+				raf.write(content.getBytes());
+				raf.close();
+			} catch (IOException e) {
+				Toast.makeText(OffLineRead.this, "文件写入错误", Toast.LENGTH_SHORT).show();
+				e.printStackTrace();
+			}			
+		} catch (FileNotFoundException e) {
+			Toast.makeText(OffLineRead.this, "文件写入错误", Toast.LENGTH_SHORT).show();
+			e.printStackTrace();
+		}
+		 
+	 }
 	public boolean isDouble(String str)
 	{
 		   try
@@ -607,15 +752,15 @@ public class OffLineRead extends Activity{
        		{
        			RIndex[i] = RIndex[i + 1];
        		}
-       		System.out.println("Rnum"+Rnum);
+       		//System.out.println("Rnum"+Rnum);
        		int[] QIndex = new int[ecgcal.length+1];
        		int Qnum;
        		Qnum = QRSProcess.QPeekDetect(Y, ecgcal.length, fre, QIndex, Rnum, RIndex);
-       		System.out.println("Qnum"+Qnum);
+       		//System.out.println("Qnum"+Qnum);
        		int[] SIndex = new int[ecgcal.length+1];
        		int Snum;
        		Snum = QRSProcess.SPeekDetect(Y, ecgcal.length, fre, SIndex, Rnum, RIndex);
-       		System.out.println("Snum"+Snum);
+       		//System.out.println("Snum"+Snum);
        		int[] RPeek = new int[Rnum-1];
        		for (int i = 0; i < Rnum - 1; i++)//这里不知道怎么要减二本来减一
        		{
@@ -624,7 +769,7 @@ public class OffLineRead extends Activity{
        		double RPeekAverage = QRSProcess.sumint(RPeek,Rnum - 1) / (Rnum - 1);
        		double TR = RPeekAverage / 250.0;
        		double HR = 60.0 / TR;
-       		System.out.println("HR:"+HR);
+       		//System.out.println("HR:"+HR);
        		int x=Integer.parseInt(new java.text.DecimalFormat("0").format(HR));
        		Message msg = new Message();  
                msg.what = 0x112;  

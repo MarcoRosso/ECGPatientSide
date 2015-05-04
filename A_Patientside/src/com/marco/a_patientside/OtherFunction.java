@@ -56,9 +56,12 @@ public class OtherFunction extends Activity{
 	private Button contactnumber2search;
 	private Button contactnumber3search;
 	private Button alertswitch;
+	private Button hralertswitch;
 	private EditText contactnumber1;
 	private EditText contactnumber2;
 	private EditText contactnumber3;
+	private EditText hralertmaxt;
+	private EditText hralertmint;
 	private TextView uploadname;
 	private TextView readname;
 	private TextView downloadname;
@@ -70,9 +73,12 @@ public class OtherFunction extends Activity{
 	private String contact3;
 	private String realfilename;
 	private String downfilename;
+	private String hralertmax;
+	private String hralertmin;
 	private int searchbuttonnumber;
 	private int buttonnumber=1;
 	private Boolean switchcondition;
+	private Boolean hralertswitchcondition;
 	ProgressDialog pd;
 	PatientUser user= new PatientUser();
 	SharedPreferences preferences;
@@ -90,21 +96,31 @@ public class OtherFunction extends Activity{
         contactnumber2search=(Button)findViewById(R.id.searchcontact2);
         contactnumber3search=(Button)findViewById(R.id.searchcontact3);
         alertswitch=(Button)findViewById(R.id.alertswitch);
+        hralertswitch=(Button)findViewById(R.id.hralertswitch);
         contactnumber1=(EditText)findViewById(R.id.contactnumber1);
         contactnumber2=(EditText)findViewById(R.id.contactnumber2);
         contactnumber3=(EditText)findViewById(R.id.contactnumber3);
+        hralertmaxt=(EditText)findViewById(R.id.hralert_max);
+        hralertmint=(EditText)findViewById(R.id.hralert_min);
         
         preferences = getSharedPreferences("setting", MODE_PRIVATE);
 		contact1=preferences.getString("contact1", "");
 		contact2=preferences.getString("contact2", "");
 		contact3=preferences.getString("contact3", "");
+		hralertswitchcondition=preferences.getBoolean("hralertswitch", true);
+		hralertmax=preferences.getString("hralertmax", "150");
+		hralertmin=preferences.getString("hralertmin", "45");
 		switchcondition=preferences.getBoolean("alerswitch", true);
 		contactnumber1.setText(contact1);
 		contactnumber2.setText(contact2);
 		contactnumber3.setText(contact3);
+		hralertmaxt.setText(hralertmax);
+		hralertmint.setText(hralertmin);
 		
 		if(switchcondition) alertswitch.setBackgroundResource(R.drawable.switch_on);
 		else alertswitch.setBackgroundResource(R.drawable.switch_off);
+		if(hralertswitchcondition) hralertswitch.setBackgroundResource(R.drawable.switch_on);
+		else hralertswitch.setBackgroundResource(R.drawable.switch_off);
 		 contactnumber1search.setOnClickListener(new OnClickListener(){
 				public void onClick(View v) {
 			        Uri uri = Uri.parse("content://contacts/people"); 
@@ -169,6 +185,20 @@ public class OtherFunction extends Activity{
 					editor.commit();					
 				}
 	        	
+	        });
+	        hralertswitch.setOnClickListener(new OnClickListener(){
+				public void onClick(View v) {
+					if(hralertswitchcondition){
+						hralertswitch.setBackgroundResource(R.drawable.switch_off);
+						hralertswitchcondition=false;
+					}else{
+						hralertswitch.setBackgroundResource(R.drawable.switch_on);
+						hralertswitchcondition=true;
+					}
+					editor = preferences.edit();
+					editor.putBoolean("hralertswitch", hralertswitchcondition);
+					editor.commit();	
+				}	        	
 	        });
 	        BmobConfiguration config = new BmobConfiguration.Builder(getApplicationContext()).customExternalCacheDir("ECGDownLoad").build();
 	        BmobPro.getInstance(getApplicationContext()).initConfig(config);
@@ -240,7 +270,25 @@ public class OtherFunction extends Activity{
 	        break; 
 	    } }
 	    super.onActivityResult(requestCode, resultCode, data);    
-	  } 
+	  }
+	public void  hralert_confirm(View view){
+		if(hralertmaxt.getText().toString().equals("")||hralertmint.getText().toString().equals("")){
+			Toast.makeText(OtherFunction.this, "请填写完整！", Toast.LENGTH_SHORT).show();
+			return;
+		}
+		if(Integer.parseInt(hralertmint.getText().toString())>=Integer.parseInt(hralertmaxt.getText().toString())){
+			Toast.makeText(OtherFunction.this, "最高心率请务必大于最低心率！", Toast.LENGTH_SHORT).show();
+			return;
+		}
+        hralertmax=hralertmaxt.getText().toString();
+        hralertmin=hralertmint.getText().toString();
+		editor = preferences.edit();
+		editor.putString("hralertmax", hralertmax);
+		editor.putString("hralertmin", hralertmin);
+		editor.commit();	
+		Toast.makeText(OtherFunction.this, "保存成功！", Toast.LENGTH_SHORT).show();
+        
+	}
 	public void choosefile(View view){
 		showDialog(openfileDialogId);
 		buttonnumber=1;
@@ -339,7 +387,6 @@ public class OtherFunction extends Activity{
             	pd.dismiss();
                 // TODO Auto-generated method stub
                 Toast.makeText(OtherFunction.this, "下载成功!", Toast.LENGTH_SHORT).show();
-                System.out.println("fullpath:"+fullPath);
                 copyandchangname(fullPath,filerealname);
             }
 
@@ -347,7 +394,6 @@ public class OtherFunction extends Activity{
             public void onProgress(String localPath, int percent) {
                 // TODO Auto-generated method stub
             	pd.setProgress(percent);
-            	System.out.println("localpath:"+localPath);
             }
 
             @Override
@@ -379,7 +425,6 @@ public class OtherFunction extends Activity{
                  byte[] buffer = new byte[1444];   
                  while ( (byteread = inStream.read(buffer)) != -1) {   
                      bytesum += byteread; //字节数 文件大小   
-                     System.out.println(bytesum);   
                      fs.write(buffer, 0, byteread);   
                  }   
                  inStream.close();   
