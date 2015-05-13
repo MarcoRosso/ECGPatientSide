@@ -14,7 +14,7 @@
           android:layout_height="wrap_content"
           android:layout_centerHorizontal="true"
           android:layout_marginTop="130dp"
-          android:textSize="17sp"
+          android:textSize="17sp" 
           android:text="@string/welcome_name"
           android:textColor="#FCFCFC" />
       <TextView
@@ -47,7 +47,7 @@
          android:layout_height="60dp"
          android:layout_below="@+id/menuone"
          android:layout_marginTop="30dp"
-         android:background="@drawable/menutwo"/>
+         android:background="@drawable/menufive"/>
       <Button
          android:onClick="menuthree"
          android:id="@+id/menuthree"

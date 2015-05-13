@@ -18,6 +18,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -115,7 +116,28 @@ public class MainActivity extends Activity {
 		    	});
 			
 			}});
-        
+        DisplayMetrics metric = new DisplayMetrics(); 
+        getWindowManager().getDefaultDisplay().getMetrics(metric); 
+        int width = metric.widthPixels;  // ÆÁÄ»¿í¶È£¨ÏñËØ£© 
+        System.out.println("width"+width);
+        int height = metric.heightPixels;  // ÆÁÄ»¸ß¶È£¨ÏñËØ£©
+        System.out.println("height"+height);
+        float density = metric.density;  // ÆÁÄ»ÃÜ¶È£¨0.75 / 1.0 / 1.5£© 
+        System.out.println("density"+density);
+        float xdpi=metric.xdpi;
+        System.out.println("xdpi"+xdpi);
+        float ydpi=metric.ydpi;
+        System.out.println("ydpi"+ydpi);
+        float xcm = (float) (width/(metric.xdpi / 2.54));
+        System.out.println("xcm"+xcm);
+        float ycm=(float)(height/(metric.ydpi/2.54));
+        System.out.println("ycm"+ycm);
+        int densityDpi = metric.densityDpi;  // ÆÁÄ»ÃÜ¶ÈDPI£¨120 / 160 / 240£© 
+        System.out.println("densityDpi"+densityDpi);
+       double diagonalPixels = Math.sqrt(Math.pow(width, 2)+Math.pow(height, 2)) ;
+       System.out.println("diagonalPixels"+diagonalPixels);
+       double screenSize = diagonalPixels/(160*density) ;
+       System.out.println("screenSize"+screenSize);
         
     }
     

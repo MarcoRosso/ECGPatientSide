@@ -207,7 +207,7 @@ public class QRSProcess {
 					repeatTime = 0;
 					RIndexNo++;
 					RIndex[RIndexNo] = RPeekIndex;
-					int k = (int)(RPeekIndex / 360.0 + 0.5);
+					int k = (int)(RPeekIndex / fs + 0.5);
 					int ktemp = k;
 					if (k != ktemp)
 					{

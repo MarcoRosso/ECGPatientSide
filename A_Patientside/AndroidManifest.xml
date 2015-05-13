@@ -74,7 +74,7 @@
              android:screenOrientation="portrait"
              />
            <activity
-             android:name=".ECGShow"
+             android:name=".OnLineRead"
              android:screenOrientation="landscape"             
              />
            <activity

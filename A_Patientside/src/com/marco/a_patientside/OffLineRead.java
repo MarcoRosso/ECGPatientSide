@@ -18,6 +18,8 @@ import java.io.RandomAccessFile;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -43,6 +45,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
@@ -64,6 +67,8 @@ public class OffLineRead extends Activity{
 	private EditText mOutEditText;
 	private Button mSendButton;
 	private Button button_search;
+	private Timer mTimer;
+	private MyTimerTask mTimerTask;
     PowerManager.WakeLock mWakeLock;
 	private SurfaceView sfv;
     private SurfaceHolder sfh;
@@ -75,19 +80,26 @@ public class OffLineRead extends Activity{
     private int calchange=0;
     private int linepos=0;
 	private int writeamount=0;
+	private int drawamount=0;
     private int  centerY,vline=0,hline=0,hline2=0,volnumber=0,oldX,oldY,Y_axis[],y=0;
     private int maxhr;
     private int minhr;
+    private int errnumber=0;
     private double readdata[];
     private double ecgcal[];
+    private double buffer[];
     private boolean creatfile=false;
-    private boolean begincal=true;
+    private boolean begincal=false;
+    private boolean calenough=false;
+    private boolean readenough=false;
+    private boolean timerrun=false;
     private Boolean hralertswitchcondition;
     private String filename;
     SharedPreferences preferences;
 	private String latitude="正在获取.....";
 	private String longitude="正在获取.....";
 	private String address="打开数据或WiFi连接互联网获取";
+	private String readmessagetemp="";
 	private LocationClient locationClient = null;
 	private static final int UPDATE_TIME = 5000;
 	private static int LOCATION_COUTNS = 0;
@@ -100,6 +112,7 @@ public class OffLineRead extends Activity{
 	public static final int MESSAGE_WRITEDATA = 7;
 	public static final int MESSAGE_DEVICE_NAME = 4;
 	public static final int MESSAGE_TOAST = 5;
+	public static final int buffersecond=5;
 
 	// Key names received from the BluetoothChatService Handler
 	public static final String DEVICE_NAME = "device_name";
@@ -141,9 +154,14 @@ public class OffLineRead extends Activity{
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "My Tag");
         ecgcal=new double[fre*12];
+        buffer=new double[fre*10];
         double temp=fre;
         double temp1=0.2/(1/temp);
         frecount=(int)(temp1);
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width = dm.widthPixels;
+
         preferences = getSharedPreferences("setting", MODE_PRIVATE);
 		maxhr=Integer.parseInt(preferences.getString("hralertmax", "150"));
 		minhr=Integer.parseInt(preferences.getString("hralertmin", "45"));
@@ -167,6 +185,7 @@ public class OffLineRead extends Activity{
 			public void surfaceCreated(SurfaceHolder holder) {
 				// TODO Auto-generated method stub
 		        frenumber=sfv.getWidth()/frecount;
+		        System.out.println("frenumber"+frenumber);
 		        volnumber=sfv.getHeight()/50;
 		        centerY = sfv.getHeight()/2; 
 			    hline=centerY;
@@ -181,44 +200,46 @@ public class OffLineRead extends Activity{
 			public void surfaceDestroyed(SurfaceHolder holder) {
 			}        	
         });
-        
-        locationClient.registerLocationListener(new BDLocationListener() {         
-            @Override
-            public void onReceiveLocation(BDLocation location) {
-                // TODO Auto-generated method stub
-                if (location == null) {
-                    return;
-                }
-                StringBuffer sb = new StringBuffer(256);
-                sb.append("Time : ");
-                sb.append(location.getTime());
-                sb.append("\nError code : ");
-                sb.append(location.getLocType());
-                sb.append("\nLatitude : ");
-                latitude=String.valueOf(location.getLatitude());
-                sb.append(location.getLatitude());
-                sb.append("\nLontitude : ");
-                longitude=String.valueOf(location.getLongitude());
-                sb.append(location.getLongitude());
-                sb.append("\nRadius : ");
-                sb.append(location.getRadius());
-                if (location.getLocType() == BDLocation.TypeGpsLocation){
-                    sb.append("\nSpeed : ");
-                    sb.append(location.getSpeed());
-                    sb.append("\nSatellite : ");
-                    sb.append(location.getSatelliteNumber());
-                } else if (location.getLocType() == BDLocation.TypeNetWorkLocation){
-                    sb.append("\nAddress : ");
-                    address=location.getAddrStr();
-                    sb.append(location.getAddrStr());
-                }
-                LOCATION_COUTNS ++;
-                sb.append("\n检查位置更新次数：");
-                sb.append(String.valueOf(LOCATION_COUTNS));
-            }                    
-        });
-           locationClient.start(); 
-           locationClient.requestLocation();
+        if(hralertswitchcondition){
+            locationClient.registerLocationListener(new BDLocationListener() {         
+                @Override
+                public void onReceiveLocation(BDLocation location) {
+                    // TODO Auto-generated method stub
+                    if (location == null) {
+                        return;
+                    }
+                    StringBuffer sb = new StringBuffer(256);
+                    sb.append("Time : ");
+                    sb.append(location.getTime());
+                    sb.append("\nError code : ");
+                    sb.append(location.getLocType());
+                    sb.append("\nLatitude : ");
+                    latitude=String.valueOf(location.getLatitude());
+                    sb.append(location.getLatitude());
+                    sb.append("\nLontitude : ");
+                    longitude=String.valueOf(location.getLongitude());
+                    sb.append(location.getLongitude());
+                    sb.append("\nRadius : ");
+                    sb.append(location.getRadius());
+                    if (location.getLocType() == BDLocation.TypeGpsLocation){
+                        sb.append("\nSpeed : ");
+                        sb.append(location.getSpeed());
+                        sb.append("\nSatellite : ");
+                        sb.append(location.getSatelliteNumber());
+                    } else if (location.getLocType() == BDLocation.TypeNetWorkLocation){
+                        sb.append("\nAddress : ");
+                        address=location.getAddrStr();
+                        sb.append(location.getAddrStr());
+                    }
+                    LOCATION_COUTNS ++;
+                    sb.append("\n检查位置更新次数：");
+                    sb.append(String.valueOf(LOCATION_COUTNS));
+                }                    
+            });
+               locationClient.start(); 
+               locationClient.requestLocation();
+        }
+
            
 		// Get local Bluetooth adapter
         ecgshow=(TextView)findViewById(R.id.show);
@@ -233,6 +254,52 @@ public class OffLineRead extends Activity{
 			return;
 		}
 	}
+    class MyTimerTask extends TimerTask {
+        @Override
+         public void run() {  	
+               Double temp2[]=new Double[50];
+		       for(int i=0;i<50;i++){
+			          temp2[i]=buffer[i];
+		       }
+			    if (50+drawamount>sfv.getWidth()){
+			    	for(int i=drawamount;i<sfv.getWidth();i++){
+						readdata[i]=temp2[i-drawamount];
+						linepos=i;
+						    
+			    	}
+			    	int alreadyread=sfv.getWidth()-drawamount;
+			    	int leftread=50+drawamount-sfv.getWidth();
+					for(int i=0;i<leftread;i++){
+							  readdata[i]=temp2[alreadyread+i];
+							  linepos=i;
+						 }
+					drawamount=leftread;
+			    }else{
+					for(int i=drawamount;i<50+drawamount;i++){
+							  readdata[i]=temp2[i-drawamount];
+							  linepos=i;
+						 }
+					drawamount=50+drawamount;
+			    }
+			    
+				Y_axis=new int[readdata.length];
+		        for(int i=0;i<readdata.length;i++){
+		        	Y_axis[i]=(int)(readdata[i]*100);
+		        	Y_axis[i] = centerY-Y_axis[i];
+		        }
+		        oldX=0;
+		    	y=0;
+		        oldY = centerY;
+		        vline=0;
+			    hline=centerY;
+			    hline2=centerY;
+		        SimpleDraw(Y_axis.length-1);	
+		  for(int i=50;i<fre*5;i++){
+		       double trans=buffer[i];
+		       buffer[i-50]=trans;
+			}    
+         }
+      }
 	protected void onStart() {
 		super.onStart();
 		// If BT is not on, request that it be enabled.
@@ -274,13 +341,20 @@ public class OffLineRead extends Activity{
    	    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
      	startActivity(intent);
    }
-	protected void onDestroy() {
+	/*protected void onDestroy() {
 		super.onDestroy();
 		// Stop the Bluetooth chat services
 		if (mChatService != null)
 			mChatService.stop();
 		mWakeLock.release(); 
-	}
+		if (locationClient.isStarted())
+			locationClient.stop();
+		if(timerrun){
+			mTimer.cancel();
+			mTimerTask.cancel();
+		}
+		finish();
+	}*/
 	  void DrawGrid(){
 	        Canvas canvas = sfh.lockCanvas(new Rect(0, 0, getWindowManager().getDefaultDisplay().getWidth(),
 	                getWindowManager().getDefaultDisplay().getHeight()));
@@ -544,6 +618,11 @@ public class OffLineRead extends Activity{
 					mTitle.setText("已连接");
 					mTitle.append(mConnectedDeviceName);
 					mConversationArrayAdapter.clear();
+					if(timerrun){
+						mTimer.cancel();
+						mTimerTask.cancel();
+						timerrun=false;
+					}
 					break;
 				case BluetoothChatService.STATE_CONNECTING:
 					mTitle.setText("正在连接....");
@@ -562,101 +641,179 @@ public class OffLineRead extends Activity{
 				break;
 			case MESSAGE_READ:
 				byte[] readBuf = (byte[]) msg.obj;
-				// construct a string from the valid bytes in the buffer
-				String readMessage = new String(readBuf, 0, msg.arg1);
-				mConversationArrayAdapter.add(readMessage);
 				if(!creatfile){
 					filename=gettime();
 					startfile(Integer.toString(fre),filename);
 					creatfile=true;
 				}
-				writefile(filename,readMessage);
+				String readMessage="";
+				for(int i=0;i<msg.arg1;i++){
+			            String hex = Integer.toHexString(readBuf[i] & 0xFF);
+			            if (hex.length() == 1)
+			            {
+			                hex = '0' + hex;
+			            }
+						readMessage=readMessage+"a"+hex.toUpperCase();
+				}
+				mConversationArrayAdapter.add(readMessage);
+				String[] temp1=readMessage.split("a");
+				readMessage="";
+				int readBuf2[]=new int[temp1.length-1];
+				double temp2[]=new double[temp1.length-1];
+				for(int i=1;i<temp1.length;i++){
+		            readBuf2[i-1]=Integer.parseInt(temp1[i], 16);
+		            temp2[i-1]=readBuf2[i-1]*3.3/256*1.61-1.95;
+					if(writeamount==fre*60){
+						filename=gettime();
+						startfile(Integer.toString(fre),filename);
+						creatfile=true;
+						writeamount=0;
+					}
+					writefile(filename,temp2[i-1]+"\n");
+					writeamount=writeamount+1;
+			    }
+				/*String readMessage = new String(readBuf, 0, msg.arg1);
+				mConversationArrayAdapter.add(readMessage);
 				String[] temp1=readMessage.split("\n");
-				int leftthing=temp1.length%10;
-				int readamountonce=temp1.length-leftthing;				
-				if(calamount<fre*12){
-				   for(int i=calamount;i<readamountonce+calamount;i++){
-					   if(isDouble(temp1[i-calamount]))
-					   ecgcal[i]=Double.parseDouble(temp1[i-calamount]);
-				   }
+				double temp2[]=new double[temp1.length];
+				for(int i=0;i<temp1.length;i++){
+		            temp2[i]=Double.parseDouble(temp1[i]);
+					if(writeamount==fre*60){
+						filename=gettime();
+						startfile(Integer.toString(fre),filename);
+						creatfile=true;
+						writeamount=0;
+					}
+					writefile(filename,temp2[i]+"\n");
+					writeamount=writeamount+1;
+			    }*/
+				 int readamountonce=temp2.length;
+				if(calamount+readamountonce<fre*12)
+			    	calenough=false;
+			    else
+			    	calenough=true;
+			    if(!calenough){
+				       for(int i=calamount;i<readamountonce+calamount;i++){
+					          ecgcal[i]=temp2[i-calamount];
+				       } 
 				   calamount=calamount+readamountonce;
-				   writeamount=writeamount+readamountonce;
 				}else{
-					  int readtemp=0;
-				      for(int i=readamountonce;i<fre*12;i++){
-						   double trans=ecgcal[i];
-						   ecgcal[i-readamountonce]=trans;
-						   }
-				      for(int i=fre*12-readamountonce;i<fre*12;i++){
-				    	   if(isDouble(temp1[readtemp])){
-							   ecgcal[i]=Double.parseDouble(temp1[readtemp]);
-							   readtemp++;
-				    	   }else 
-                               readtemp++;
-						   }
-				      if(begincal) {
-				    	  HRCal();
-				    	  begincal=false;
-				      }
-				      calchange=calchange+readamountonce;
-				      if(calchange>=fre*2){
+					  if(begincal){
+						  int readtemp=0;
+					      for(int i=readamountonce;i<fre*12;i++){
+							   double trans=ecgcal[i];
+							   ecgcal[i-readamountonce]=trans;
+							   }
+					      for(int i=fre*12-readamountonce;i<fre*12;i++){
+								   ecgcal[i]=temp2[readtemp];
+								   readtemp++;
+							   }
+					      calchange=calchange+readamountonce;
+					      if(calchange>=fre*2){
+						      HRCal();
+						      calchange=0;
+					      }
+					  }else{
+						  int readtemp=0;
+					      for(int i=readamountonce;i<fre*12;i++){
+							   double trans=ecgcal[i];
+							   ecgcal[i-readamountonce]=trans;
+							   }
+					      for(int i=fre*12-readamountonce;i<fre*12;i++){
+								   ecgcal[i]=temp2[readtemp];
+								   readtemp++;
+							   }
 					      HRCal();
-					      calchange=0;
-				      }
-				      writeamount=writeamount+readamountonce;
+					      begincal=true;
+					  }			      
 				}
-				
-				if(writeamount==(60*fre)){
-					creatfile=false;
-					writeamount=0;
-				}
-			    if (readamountonce+readamount>sfv.getWidth()) 
-			    	readamount=0;			    
-			    	  //从左往右滚动式
-			    	 /*int readtemp=0;
-				      for(int i=readamountonce;i<sfv.getWidth();i++){
-						   double trans=readdata[i];
-						   readdata[i-readamountonce]=trans;
-						   }
-				      for(int i=sfv.getWidth()-readamountonce;i<sfv.getWidth();i++){
-						   readdata[i]=Double.parseDouble(temp1[readtemp]);
-						   readtemp++;
-						   }*/
-			    	  //从左往右扫描式
-				for(int i=readamount;i<readamountonce+readamount;i++){
-				   if(isDouble(temp1[i-readamount])){
-					  readdata[i]=Double.parseDouble(temp1[i-readamount]);
-					  linepos=i;
-				       }
-				 }
-			    readamount=readamountonce+readamount;
-						   
-				Y_axis=new int[readdata.length];
-		        for(int i=0;i<readdata.length;i++){
-		        	Y_axis[i]=(int)(readdata[i]*100);
-		        	Y_axis[i] = centerY-Y_axis[i];
-		        }
-		        oldX=0;
-		    	y=0;
-		        oldY = centerY;
-		        vline=0;
-			    hline=centerY;
-			    hline2=centerY;
-		        SimpleDraw(Y_axis.length-1);
-			/*	try{  //处理板子上三位电阻值 
-			for(int i=0;i<temp1.length;i++){
-					String process1=temp1[i];
-					char a=process1.charAt(0);
-					char b=process1.charAt(1);
-					char c=process1.charAt(2);
-					char[] cha={a,b,c};
-					String n = String.valueOf(cha);
-					int process3=Integer.parseInt(n,16);
-					System.out.println(process3);
-				}
-				}catch(Exception e){
-					
-				}*/
+			    
+				 if (readamountonce+readamount>sfv.getWidth()){
+				    	for(int i=readamount;i<sfv.getWidth();i++){
+									  readdata[i]=temp2[i-readamount];
+									  linepos=i;
+				    	}
+				    	int alreadyread=sfv.getWidth()-readamount;
+				    	int leftread=readamountonce+readamount-sfv.getWidth();
+						for(int i=0;i<leftread;i++){
+								  readdata[i]=temp2[alreadyread+i];
+								  linepos=i;
+							 }
+				    	readamount=leftread;
+				    }else{
+						for(int i=readamount;i<readamountonce+readamount;i++){
+								  readdata[i]=temp2[i-readamount];
+								  linepos=i;
+							 }
+						readamount=readamountonce+readamount;
+				    }
+				    
+					Y_axis=new int[readdata.length];
+			        for(int i=0;i<readdata.length;i++){
+			        	Y_axis[i]=(int)(readdata[i]*100);
+			        	Y_axis[i] = centerY-Y_axis[i];
+			        }
+			        oldX=0;
+			    	y=0;
+			        oldY = centerY;
+			        vline=0;
+				    hline=centerY;
+				    hline2=centerY;
+			        SimpleDraw(Y_axis.length-1);		
+				//String readMessage = new String(readBuf, 0, msg.arg1);
+				//mConversationArrayAdapter.add(readMessage);
+				/*  if(readMessage.endsWith("a")){					
+						readmessagetemp=readmessagetemp+readMessage;
+				        readmessagetemp=""+readMessage;
+						String[] temp1=readmessagetemp.split("\n");
+						double temp2[]=new double[temp1.length];
+					    for(int i=0;i<temp1.length;i++){
+					    	if(temp1[i].length()==3){
+							String process1=temp1[i];
+							char a=process1.charAt(0);
+							char b=process1.charAt(1);
+							char c=process1.charAt(2);
+							char[] cha={a,b,c};
+							String n = String.valueOf(cha);
+							int process3=Integer.parseInt(n,16);
+							temp2[i]=ValueTable.getvaluetable(process3);
+							}else{
+								errnumber=errnumber+1;
+								System.out.println("errnumber"+errnumber);
+							}
+						}
+					    int readamountonce=temp2.length;
+					    if(readamount+readamountonce<fre*buffersecond)
+					    	readenough=false;
+					    else
+					    	readenough=true;
+					    if(!readenough){
+						       for(int i=readamount;i<readamountonce+readamount;i++){
+							          buffer[i]=temp2[i-readamount];
+						       }
+						       readamount=readamount+readamountonce;
+					    }else{
+							  int readtemp=0;
+						      for(int i=readamountonce;i<fre*buffersecond;i++){
+								   double trans=buffer[i];
+								   buffer[i-readamountonce]=trans;
+								   }
+						      for(int i=fre*buffersecond-readamountonce;i<fre*buffersecond;i++){
+									   buffer[i]=temp2[readtemp];
+									   readtemp++;
+								   }
+					    }
+					    if(!timerrun){
+						    mTimer = new Timer();
+						    mTimerTask = new MyTimerTask();
+						    mTimer.schedule(mTimerTask, 4000, 200);
+						    timerrun=true;
+					    }
+
+			      }else{
+					  readmessagetemp=readmessagetemp+readMessage;
+				  }*/
+			        
 				break;
 			case MESSAGE_DEVICE_NAME:
 				// save the connected device's name
@@ -767,7 +924,7 @@ public class OffLineRead extends Activity{
        			RPeek[i] = RIndex[i + 1] - RIndex[i];
        		}
        		double RPeekAverage = QRSProcess.sumint(RPeek,Rnum - 1) / (Rnum - 1);
-       		double TR = RPeekAverage / 250.0;
+       		double TR = RPeekAverage / fre;
        		double HR = 60.0 / TR;
        		//System.out.println("HR:"+HR);
        		int x=Integer.parseInt(new java.text.DecimalFormat("0").format(HR));
@@ -808,4 +965,19 @@ public class OffLineRead extends Activity{
 			}
 		}
 	}
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){   
+    		if (mChatService != null)
+    			mChatService.stop();
+    		mWakeLock.release(); 
+    		if (locationClient.isStarted())
+    			locationClient.stop();
+    		if(timerrun){
+    			mTimer.cancel();
+    			mTimerTask.cancel();
+    		}
+               finish(); 
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 }

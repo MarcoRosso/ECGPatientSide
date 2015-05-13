@@ -9,16 +9,21 @@ package com.marco.a_patientside;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.location.LocationClientOption.LocationMode;
+import com.marco.constant.PatientIn;
 
 
 
 
 
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.UpdateListener;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Service;
@@ -74,6 +79,38 @@ public class ContactActivity extends Activity  {
     		if(!isMyServiceRunning()&&servicesetting)
 	        {Intent intent1 = new Intent(ContactActivity.this,FallDownService.class); 
 	        startService(intent1);} 
+    		BmobQuery<PatientIn> query = new BmobQuery<PatientIn>();
+			 query.addWhereEqualTo("PatientName", name);
+			 query.findObjects(ContactActivity.this, new FindListener<PatientIn>() {
+				@Override
+				public void onError(int arg0, String arg1) {
+					// TODO Auto-generated method stub
+					Toast.makeText(ContactActivity.this, "获取用户信息错误"+arg0+arg1, Toast.LENGTH_SHORT).show();	
+				}
+				@Override
+				public void onSuccess(
+						List<PatientIn> arg0) {
+					// TODO Auto-generated method stub
+					String id = null;
+					for(PatientIn patientin:arg0){
+						id=patientin.getObjectId();
+					}
+					PatientIn p2 = new PatientIn();
+					p2.setOnline(0);
+					p2.update(ContactActivity.this, id, new UpdateListener() {
+					    @Override
+					    public void onSuccess() {
+					        // TODO Auto-generated method stub
+					    	//Toast.makeText(ContactActivity.this, "下线成功", Toast.LENGTH_SHORT).show();
+					    }
+					    @Override
+					    public void onFailure(int code, String msg) {
+					        // TODO Auto-generated method stub
+					    	Toast.makeText(ContactActivity.this, "远程心电实时监测下线失败"+code+msg, Toast.LENGTH_SHORT).show();	
+					    }
+					});
+				}             					 
+			 });
 	 }
 	 protected void onResume(){
 		 super.onResume();
@@ -175,8 +212,7 @@ public class ContactActivity extends Activity  {
 	 public void menutwo(View view){
 		    Intent intent= new Intent();
 		    intent.putExtra("username", name);
-		    intent.putExtra("readpath", "/sdcard/ECG/QRS.txt");
-		    intent.setClass(ContactActivity.this, ECGShow.class);
+		    intent.setClass(ContactActivity.this, OnLineRead.class);
 		    startActivity(intent);
 	 }
 	 public void menufour(View view){

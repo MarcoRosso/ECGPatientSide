@@ -46,10 +46,10 @@ public final class R {
         public static final int login_back=0x7f020015;
         public static final int login_button=0x7f020016;
         public static final int logoalert=0x7f020017;
-        public static final int menufour=0x7f020018;
-        public static final int menuone=0x7f020019;
-        public static final int menuthree=0x7f02001a;
-        public static final int menutwo=0x7f02001b;
+        public static final int menufive=0x7f020018;
+        public static final int menufour=0x7f020019;
+        public static final int menuone=0x7f02001a;
+        public static final int menuthree=0x7f02001b;
         public static final int password=0x7f02001c;
         public static final int read_button=0x7f02001d;
         public static final int read_title=0x7f02001e;

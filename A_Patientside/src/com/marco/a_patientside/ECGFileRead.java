@@ -346,7 +346,7 @@ public class ECGFileRead extends Activity{
        			RPeek[i] = RIndex[i + 1] - RIndex[i];
        		}
        		double RPeekAverage = QRSProcess.sumint(RPeek,Rnum - 1) / (Rnum - 1);
-       		double TR = RPeekAverage / 250.0;
+       		double TR = RPeekAverage / fre;
        		double HR = 60.0 / TR;
        		System.out.println("HR:"+HR);
        		int x=Integer.parseInt(new java.text.DecimalFormat("0").format(HR));
