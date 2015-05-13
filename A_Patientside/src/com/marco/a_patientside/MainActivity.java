@@ -116,7 +116,7 @@ public class MainActivity extends Activity {
 		    	});
 			
 			}});
-        DisplayMetrics metric = new DisplayMetrics(); 
+       /* DisplayMetrics metric = new DisplayMetrics(); 
         getWindowManager().getDefaultDisplay().getMetrics(metric); 
         int width = metric.widthPixels;  // ÆÁÄ»¿í¶È£¨ÏñËØ£© 
         System.out.println("width"+width);
@@ -137,7 +137,7 @@ public class MainActivity extends Activity {
        double diagonalPixels = Math.sqrt(Math.pow(width, 2)+Math.pow(height, 2)) ;
        System.out.println("diagonalPixels"+diagonalPixels);
        double screenSize = diagonalPixels/(160*density) ;
-       System.out.println("screenSize"+screenSize);
+       System.out.println("screenSize"+screenSize);*/
         
     }
     

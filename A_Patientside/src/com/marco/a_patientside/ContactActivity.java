@@ -79,6 +79,7 @@ public class ContactActivity extends Activity  {
     		if(!isMyServiceRunning()&&servicesetting)
 	        {Intent intent1 = new Intent(ContactActivity.this,FallDownService.class); 
 	        startService(intent1);} 
+	        
     		BmobQuery<PatientIn> query = new BmobQuery<PatientIn>();
 			 query.addWhereEqualTo("PatientName", name);
 			 query.findObjects(ContactActivity.this, new FindListener<PatientIn>() {

@@ -73,15 +73,23 @@ public class OffLineRead extends Activity{
 	private SurfaceView sfv;
     private SurfaceHolder sfh;
     private int frenumber=0;
-    private int frecount=0;
+    private int smallfrenumber=0;
+    private float frecount=0;
+    private float smallfrecount=0;
     private int fre=250;
     private int readamount=0;
+    private int totalamount=0;
     private int calamount=0;
     private int calchange=0;
-    private int linepos=0;
+    private float linepos=0;
 	private int writeamount=0;
 	private int drawamount=0;
-    private int  centerY,vline=0,hline=0,hline2=0,volnumber=0,oldX,oldY,Y_axis[],y=0;
+    private int  centerY,hline=0,hline2=0,smallhline=0,smallhline2=0,volnumber=0,smallvolnumber=0,oldY,Y_axis[],y=0;
+    private float vline=0;
+    private float smallvline=0;
+    private float onceplus=0;
+    private float drawoldx=0;
+    private float drawnextx=0;
     private int maxhr;
     private int minhr;
     private int errnumber=0;
@@ -155,12 +163,6 @@ public class OffLineRead extends Activity{
         mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "My Tag");
         ecgcal=new double[fre*12];
         buffer=new double[fre*10];
-        double temp=fre;
-        double temp1=0.2/(1/temp);
-        frecount=(int)(temp1);
-        DisplayMetrics dm = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dm);
-        int width = dm.widthPixels;
 
         preferences = getSharedPreferences("setting", MODE_PRIVATE);
 		maxhr=Integer.parseInt(preferences.getString("hralertmax", "150"));
@@ -184,14 +186,30 @@ public class OffLineRead extends Activity{
 			@Override
 			public void surfaceCreated(SurfaceHolder holder) {
 				// TODO Auto-generated method stub
-		        frenumber=sfv.getWidth()/frecount;
-		        System.out.println("frenumber"+frenumber);
+		        DisplayMetrics metric = new DisplayMetrics(); 
+		        getWindowManager().getDefaultDisplay().getMetrics(metric); 
+		        float xcm = (float) (metric.xdpi / 2.54);
+		        double temp=sfv.getWidth()/xcm/0.5;
+		        frenumber=(int)temp;
+		        double temp2=sfv.getWidth()/xcm/0.1;
+		        smallfrenumber=(int)temp2;
+		        frecount=(float) (xcm*0.5);
+		        smallfrecount=(float)(xcm*0.1);
 		        volnumber=sfv.getHeight()/50;
+		        smallvolnumber=sfv.getHeight()/10;
 		        centerY = sfv.getHeight()/2; 
 			    hline=centerY;
 			    hline2=centerY;
+			    smallhline=centerY;
+			    smallhline2=centerY;
 		        DrawGrid();
-		        readdata=new double[sfv.getWidth()];
+		        double temp3=sfv.getWidth()/xcm/2.5*fre;
+		        totalamount=(int)temp3;
+		        System.out.println("temp3 "+temp3);
+		        System.out.println("totalamount"+totalamount);
+		        readdata=new double[totalamount];
+		        double temp4=sfv.getWidth()/temp3;
+		        onceplus=(float)temp4;
 				mWakeLock.acquire(); 
 			}
 			public void surfaceChanged(SurfaceHolder holder, int format,
@@ -287,7 +305,6 @@ public class OffLineRead extends Activity{
 		        	Y_axis[i]=(int)(readdata[i]*100);
 		        	Y_axis[i] = centerY-Y_axis[i];
 		        }
-		        oldX=0;
 		    	y=0;
 		        oldY = centerY;
 		        vline=0;
@@ -316,8 +333,6 @@ public class OffLineRead extends Activity{
 	}
 	public synchronized void onResume() {
 		super.onResume();
-
-
 		// Performing this check in onResume() covers the case in which BT was
 		// not enabled during onStart(), so we were paused to enable it...
 		// onResume() will be called when ACTION_REQUEST_ENABLE activity
@@ -341,31 +356,18 @@ public class OffLineRead extends Activity{
    	    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
      	startActivity(intent);
    }
-	/*protected void onDestroy() {
-		super.onDestroy();
-		// Stop the Bluetooth chat services
-		if (mChatService != null)
-			mChatService.stop();
-		mWakeLock.release(); 
-		if (locationClient.isStarted())
-			locationClient.stop();
-		if(timerrun){
-			mTimer.cancel();
-			mTimerTask.cancel();
-		}
-		finish();
-	}*/
 	  void DrawGrid(){
 	        Canvas canvas = sfh.lockCanvas(new Rect(0, 0, getWindowManager().getDefaultDisplay().getWidth(),
 	                getWindowManager().getDefaultDisplay().getHeight()));
 	        canvas.drawColor(Color.BLACK);
 	        Paint mPaint = new Paint();
 	        mPaint.setColor(Color.GRAY);
-	        mPaint.setStrokeWidth(1);
+	        mPaint.setStrokeWidth(2);
 	        for(int j=0;j<=frenumber;j++){
 	        	canvas.drawLine(vline, 0, vline, sfv.getHeight(), mPaint);
 	        	vline=vline+frecount;
 	        }
+
 	        for(int k=0;k<=volnumber/2;k++){
 	        	canvas.drawLine(0, hline, sfv.getWidth(),hline, mPaint);
 	        	hline=hline+50;
@@ -373,6 +375,19 @@ public class OffLineRead extends Activity{
 	        for(int k=0;k<=volnumber/2;k++){
 	        	canvas.drawLine(0, hline2, sfv.getWidth(),hline2, mPaint);
 	        	hline2=hline2-50;
+	        }
+	        mPaint.setStrokeWidth(1);
+	        for(int j=0;j<=smallfrenumber;j++){
+	        	canvas.drawLine(smallvline, 0, smallvline, sfv.getHeight(), mPaint);
+	        	smallvline=smallvline+smallfrecount;
+	        }
+	        for(int k=0;k<=smallvolnumber/2;k++){
+	        	canvas.drawLine(0, smallhline, sfv.getWidth(),smallhline, mPaint);
+	        	smallhline=smallhline+10;
+	        }
+	        for(int l=0;l<=smallvolnumber/2;l++){
+	        	canvas.drawLine(0, smallhline2, sfv.getWidth(),smallhline2, mPaint);
+	        	smallhline2=smallhline2-10;
 	        }
 	        mPaint.setStrokeWidth(4);
 	        canvas.drawLine(0, centerY, sfv.getWidth(), centerY, mPaint);
@@ -384,7 +399,8 @@ public class OffLineRead extends Activity{
 	        int y3 = 0;
 	        int x4 = 0;
 	        int y4 = 0;
-	        int ex=frecount,sx=frecount,ey=sfv.getHeight()-85,sy=sfv.getHeight()-35;
+	        float ex=frecount,sx=frecount;
+	        int ey=sfv.getHeight()-85,sy=sfv.getHeight()-35;
 	        canvas.drawText("0.5mV", frecount+2, sfv.getHeight()-86, mPaint);
 	        double awrad = Math.atan(L / H); // 箭头角度   
 	        double arraow_len = Math.sqrt(L * L + H * H); // 箭头的长度   
@@ -443,7 +459,7 @@ public class OffLineRead extends Activity{
 	        canvas.drawColor(Color.BLACK);
 	        Paint mPaint = new Paint();
 	        mPaint.setColor(Color.GRAY);
-	        mPaint.setStrokeWidth(1);
+	        mPaint.setStrokeWidth(2);
 	        for(int j=0;j<=frenumber;j++){
 	        	canvas.drawLine(vline, 0, vline, sfv.getHeight(), mPaint);
 	        	vline=vline+frecount;
@@ -456,18 +472,30 @@ public class OffLineRead extends Activity{
 	        	canvas.drawLine(0, hline2, sfv.getWidth(),hline2, mPaint);
 	        	hline2=hline2-50;
 	        }
+	        mPaint.setStrokeWidth(1);
+	        for(int i=0;i<=smallfrenumber;i++){
+	        	canvas.drawLine(smallvline, 0, smallvline, sfv.getHeight(), mPaint);
+	        	smallvline=smallvline+smallfrecount;
+	        }
+	        for(int k=0;k<=smallvolnumber/2;k++){
+	        	canvas.drawLine(0, smallhline, sfv.getWidth(),smallhline, mPaint);
+	        	smallhline=smallhline+10;
+	        }
+	        for(int l=0;l<=smallvolnumber/2;l++){
+	        	canvas.drawLine(0, smallhline2, sfv.getWidth(),smallhline2, mPaint);
+	        	smallhline2=smallhline2-10;
+	        }
 	        mPaint.setStrokeWidth(4);
 	        canvas.drawLine(0, centerY, sfv.getWidth(), centerY, mPaint);
-	    	 if (length == 0)
-	    	        oldX = 0;
 	    	        mPaint.setColor(Color.GREEN);// 画笔为绿色
 	    	        mPaint.setStrokeWidth(2);// 设置画笔粗细
 	    	        canvas.drawLine(linepos, 0, linepos, sfv.getHeight(), mPaint);
 	    	        int y;
-	    	        for (int i = oldX + 1; i < length; i++) {// 绘画
-	    	        y = Y_axis[i-1];
-	    	        canvas.drawLine(oldX, oldY, i, y, mPaint);
-	    	        oldX = i;
+	    	        for (int i = 0; i < length; i++) {// 绘画
+	    	        y = Y_axis[i];
+	    	        canvas.drawLine(drawoldx, oldY, drawnextx, y, mPaint);
+	    	        drawoldx=drawnextx;
+	    	        drawnextx=drawoldx+onceplus;
 	    	        oldY = y;
 	    	        }
 	    	  double H = 8; // 箭头高度   
@@ -476,7 +504,8 @@ public class OffLineRead extends Activity{
 	    	  int y3 = 0;
 	    	  int x4 = 0;
 	    	  int y4 = 0;
-	    	  int ex=frecount,sx=frecount,ey=sfv.getHeight()-85,sy=sfv.getHeight()-35;
+	    	  float ex=frecount,sx=frecount;
+	    	  int ey=sfv.getHeight()-85,sy=sfv.getHeight()-35;
 	    	  canvas.drawText("0.5mV", frecount+2, sfv.getHeight()-86, mPaint);
 	    	  double awrad = Math.atan(L / H); // 箭头角度   
 	    	  double arraow_len = Math.sqrt(L * L + H * H); // 箭头的长度   
@@ -646,7 +675,7 @@ public class OffLineRead extends Activity{
 					startfile(Integer.toString(fre),filename);
 					creatfile=true;
 				}
-				String readMessage="";
+				/*String readMessage="";
 				for(int i=0;i<msg.arg1;i++){
 			            String hex = Integer.toHexString(readBuf[i] & 0xFF);
 			            if (hex.length() == 1)
@@ -671,8 +700,8 @@ public class OffLineRead extends Activity{
 					}
 					writefile(filename,temp2[i-1]+"\n");
 					writeamount=writeamount+1;
-			    }
-				/*String readMessage = new String(readBuf, 0, msg.arg1);
+			    }*/
+				String readMessage = new String(readBuf, 0, msg.arg1);
 				mConversationArrayAdapter.add(readMessage);
 				String[] temp1=readMessage.split("\n");
 				double temp2[]=new double[temp1.length];
@@ -686,7 +715,8 @@ public class OffLineRead extends Activity{
 					}
 					writefile(filename,temp2[i]+"\n");
 					writeamount=writeamount+1;
-			    }*/
+			    }
+				
 				 int readamountonce=temp2.length;
 				if(calamount+readamountonce<fre*12)
 			    	calenough=false;
@@ -728,22 +758,22 @@ public class OffLineRead extends Activity{
 					  }			      
 				}
 			    
-				 if (readamountonce+readamount>sfv.getWidth()){
-				    	for(int i=readamount;i<sfv.getWidth();i++){
+				 if (readamountonce+readamount>totalamount){
+				    	for(int i=readamount;i<totalamount;i++){
 									  readdata[i]=temp2[i-readamount];
-									  linepos=i;
+									  linepos=i*onceplus;
 				    	}
-				    	int alreadyread=sfv.getWidth()-readamount;
-				    	int leftread=readamountonce+readamount-sfv.getWidth();
+				    	int alreadyread=totalamount-readamount;
+				    	int leftread=readamountonce+readamount-totalamount;
 						for(int i=0;i<leftread;i++){
 								  readdata[i]=temp2[alreadyread+i];
-								  linepos=i;
+								  linepos=i*onceplus;
 							 }
 				    	readamount=leftread;
 				    }else{
 						for(int i=readamount;i<readamountonce+readamount;i++){
 								  readdata[i]=temp2[i-readamount];
-								  linepos=i;
+								  linepos=i*onceplus;
 							 }
 						readamount=readamountonce+readamount;
 				    }
@@ -753,13 +783,17 @@ public class OffLineRead extends Activity{
 			        	Y_axis[i]=(int)(readdata[i]*100);
 			        	Y_axis[i] = centerY-Y_axis[i];
 			        }
-			        oldX=0;
+			        drawoldx=0;
+			        drawnextx=0;
 			    	y=0;
 			        oldY = centerY;
 			        vline=0;
+			        smallvline=0;
 				    hline=centerY;
 				    hline2=centerY;
-			        SimpleDraw(Y_axis.length-1);		
+				    smallhline=centerY;
+				    smallhline2=centerY;
+			        SimpleDraw(Y_axis.length);		
 				//String readMessage = new String(readBuf, 0, msg.arg1);
 				//mConversationArrayAdapter.add(readMessage);
 				/*  if(readMessage.endsWith("a")){					
@@ -882,12 +916,12 @@ public class OffLineRead extends Activity{
 		   catch(NumberFormatException ex){}
 		   return false;
 	}
-    public double[] rotateVec(int px, int py, double ang, boolean isChLen, double newLen)
+    public double[] rotateVec(float f, int py, double ang, boolean isChLen, double newLen)
     {
         double mathstr[] = new double[2];
         // 矢量旋转函数，参数含义分别是x分量、y分量、旋转角、是否改变长度、新长度   
-        double vx = px * Math.cos(ang) - py * Math.sin(ang);
-        double vy = px * Math.sin(ang) + py * Math.cos(ang);
+        double vx = f * Math.cos(ang) - py * Math.sin(ang);
+        double vy = f * Math.sin(ang) + py * Math.cos(ang);
         if (isChLen) {
             double d = Math.sqrt(vx * vx + vy * vy);
             vx = vx / d * newLen;
