@@ -205,8 +205,6 @@ public class OffLineRead extends Activity{
 		        DrawGrid();
 		        double temp3=sfv.getWidth()/xcm/2.5*fre;
 		        totalamount=(int)temp3;
-		        System.out.println("temp3 "+temp3);
-		        System.out.println("totalamount"+totalamount);
 		        readdata=new double[totalamount];
 		        double temp4=sfv.getWidth()/temp3;
 		        onceplus=(float)temp4;

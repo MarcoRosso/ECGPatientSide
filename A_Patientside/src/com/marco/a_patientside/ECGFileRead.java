@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -57,22 +58,25 @@ public class ECGFileRead extends Activity{
 	private TextView ecgperiod;
 	private SurfaceView sfv;
     private SurfaceHolder sfh;
-    private int frecount=0;
+    private float frecount=0;
+    private float smallfrecount=0;
     private int fre=0;
     private int frenumber=0;
-    private int volnumber=0;
+    private int smallfrenumber=0;
     private int linecount;
     private int drawcount;
     private int drewcount=1;
     private int calculate=0;
+    private int totalamount=0;
     private double readonetime;
     double[] data;
     float hnumber1=0.0f,hnumber2=0.0f,vnumber=0.0f;
-    int Y_axis[];
-    int  centerY,//中心线
-    oldX=0,oldY=0,//上一个XY 点
-    currentX,i=1,y=0,
-    vline=0,hline=0,hline2=0;//当前绘制到的X 轴上的点
+    private int  centerY,hline=0,hline2=0,smallhline=0,smallhline2=0,volnumber=0,smallvolnumber=0,oldY,Y_axis[],y=0;
+    private float vline=0;
+    private float smallvline=0;
+    private float onceplus=0;
+    private float drawoldx=0;
+    private float drawnextx=0;
     Handler mHandler= new Handler(){
     	public void handleMessage(Message msg){
             if(msg.what==0x112){
@@ -102,8 +106,7 @@ public class ECGFileRead extends Activity{
         counttex=(TextView)findViewById(R.id.counttext);
         ecgperiod=(TextView)findViewById(R.id.ecgperiod);
         
-        sfv = (SurfaceView)findViewById(R.id.SurfaceView01);
-        
+        sfv = (SurfaceView)findViewById(R.id.SurfaceView01);      
         sfh = sfv.getHolder();
         centerY = (getWindowManager().getDefaultDisplay().getHeight()-sfv.getTop()) / 2;
         previous.setVisibility(View.GONE);
@@ -129,12 +132,21 @@ public class ECGFileRead extends Activity{
         String tempfre[]=readfile.split("\n");
         fre=Integer.parseInt(tempfre[0]);
         
-        double temp=fre;
-        double temp1=0.2/(1/temp);
-        frecount=(int)(temp1);
-        frenumber=getWindowManager().getDefaultDisplay().getWidth()/frecount;
+        DisplayMetrics metric = new DisplayMetrics(); 
+        getWindowManager().getDefaultDisplay().getMetrics(metric); 
+        float xcm = (float) (metric.xdpi / 2.54);
+        double temp=getWindowManager().getDefaultDisplay().getWidth()/xcm/0.5;
+        frenumber=(int)temp;
+        double temp2=getWindowManager().getDefaultDisplay().getWidth()/xcm/0.1;
+        smallfrenumber=(int)temp2;
+        frecount=(float) (xcm*0.5);
+        smallfrecount=(float)(xcm*0.1);
         volnumber=getWindowManager().getDefaultDisplay().getHeight()/50;
-    	readonetime=frenumber*0.2*fre;
+        smallvolnumber=getWindowManager().getDefaultDisplay().getHeight()/10;
+        double temp3=getWindowManager().getDefaultDisplay().getWidth()/xcm/2.5*fre;
+        double temp4=getWindowManager().getDefaultDisplay().getWidth()/temp3;
+        onceplus=(float)temp4;
+        readonetime=frenumber*(frecount/temp4);
     	int drawtemp=(int) ((linecount-1)/readonetime);
     	int afterdot=(int) ((linecount-1)%readonetime);
     	if(afterdot==0)
@@ -155,21 +167,23 @@ public class ECGFileRead extends Activity{
 		        	Y_axis[i] = centerY-Y_axis[i];	           
 		        }
 		    	vline=0;
+		    	smallvline=0;
 		    	hline=centerY;
 		    	hline2=centerY;
-		    	oldX=0;
-		    	i=1;
+			    smallhline=centerY;
+			    smallhline2=centerY;
+		        drawoldx=0;
+		        drawnextx=0;
 		    	y=0;
 		        oldY = centerY;
-		        currentX = 0;
 		    	hnumber1=0.0f;
 		    	hnumber2=0.0f;
 		    	vnumber=0.0f;
-		    	drewcount=1;
+		    	drewcount=1;	    	
 		        drawnumber.setText("共"+Integer.toString(drawcount)+"屏，现在是第"+
                         Integer.toString(drewcount)+"屏");
 		        ecgshow.setText("XXX");
- 		    	SimpleDraw(Y_axis.length-1);
+ 		    	SimpleDraw(Y_axis.length);
  		    	draw.setVisibility(View.GONE);
  		    	drawt.setVisibility(View.GONE);
 		        previous.setVisibility(View.VISIBLE);
@@ -215,17 +229,19 @@ public class ECGFileRead extends Activity{
 		           
 		        }
 		    	vline=0;
+		    	smallvline=0;
 		    	hline=centerY;
 		    	hline2=centerY;
-		    	oldX=0;
-		    	i=1;
+		    	smallhline=centerY;
+			    smallhline2=centerY;
+		        drawoldx=0;
+		        drawnextx=0;
 		    	y=0;
 		        oldY = centerY;
-		        currentX = 0;
 		    	hnumber1=0.0f;
 		    	hnumber2=0.0f;
 		    	vnumber=0.0f;
-		    	SimpleDraw(Y_axis.length-1);
+		    	SimpleDraw(Y_axis.length);
 		   }			        	
         });
         previous.setOnClickListener(new OnClickListener(){
@@ -263,17 +279,19 @@ public class ECGFileRead extends Activity{
 		        	Y_axis[i] = centerY-Y_axis[i];	           
 		        }}
 		    	vline=0;
+		    	smallvline=0;
 		    	hline=centerY;
 		    	hline2=centerY;
-		    	oldX=0;
-		    	i=1;
+		    	smallhline=centerY;
+			    smallhline2=centerY;
+		        drawoldx=0;
+		        drawnextx=0;
 		    	y=0;
 		        oldY = centerY;
-		        currentX = 0;
 		    	hnumber1=0.0f;
 		    	hnumber2=0.0f;
 		    	vnumber=0.0f;
-		    	SimpleDraw(Y_axis.length-1);
+		    	SimpleDraw(Y_axis.length);
 		   }			        	
         });
         back.setOnClickListener(new OnClickListener(){
@@ -413,7 +431,7 @@ public class ECGFileRead extends Activity{
         canvas.drawColor(Color.BLACK);
         Paint mPaint = new Paint();
         mPaint.setColor(Color.GRAY);
-        mPaint.setStrokeWidth(1);
+        mPaint.setStrokeWidth(2);
         for(int j=0;j<=frenumber;j++){
         	canvas.drawLine(vline, 0, vline, getWindowManager().getDefaultDisplay().getHeight(), mPaint);
         	DecimalFormat decimalFormat=new DecimalFormat("0.0");
@@ -434,18 +452,29 @@ public class ECGFileRead extends Activity{
         	hnumber2=hnumber2+0.5f;
         	hline2=hline2-50;
         }
+        mPaint.setStrokeWidth(1);
+        for(int j=0;j<=smallfrenumber;j++){
+        	canvas.drawLine(smallvline, 0, smallvline, sfv.getHeight(), mPaint);
+        	smallvline=smallvline+smallfrecount;
+        }
+        for(int k=0;k<=smallvolnumber/2;k++){
+        	canvas.drawLine(0, smallhline, sfv.getWidth(),smallhline, mPaint);
+        	smallhline=smallhline+10;
+        }
+        for(int l=0;l<=smallvolnumber/2;l++){
+        	canvas.drawLine(0, smallhline2, sfv.getWidth(),smallhline2, mPaint);
+        	smallhline2=smallhline2-10;
+        }
         mPaint.setStrokeWidth(4);
         canvas.drawLine(0, centerY, getWindowManager().getDefaultDisplay().getWidth(), centerY, mPaint);
-    	 if (length == 0)
-    	        oldX = 0;
-    	        Paint mPaint1 = new Paint();
-    	        mPaint1.setColor(Color.GREEN);// 画笔为绿色
-    	        mPaint1.setStrokeWidth(2);// 设置画笔粗细
+    	        mPaint.setColor(Color.GREEN);// 画笔为绿色
+    	        mPaint.setStrokeWidth(2);// 设置画笔粗细
     	        int y;
-    	        for (int i = oldX + 1; i < length; i++) {// 绘画
-    	        y = Y_axis[i-1];
-    	        canvas.drawLine(oldX, oldY, i, y, mPaint1);
-    	        oldX = i;
+    	        for (int i = 0; i < length; i++) {// 绘画
+    	        y = Y_axis[i];
+    	        canvas.drawLine(drawoldx, oldY, drawnextx, y, mPaint);
+    	        drawoldx=drawnextx;
+    	        drawnextx=drawoldx+onceplus;
     	        oldY = y;
     	        }
     	        sfh.unlockCanvasAndPost(canvas);// 解锁画布，提交画好的图像
@@ -540,7 +569,7 @@ public class ECGFileRead extends Activity{
             {
                 Log.d("TestFile", "The File doesn't not exist.");
             }
-            else
+            else  
             {
                 try {
                     InputStream instream = new FileInputStream(file); 
