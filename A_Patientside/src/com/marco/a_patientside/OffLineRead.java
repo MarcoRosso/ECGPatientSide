@@ -673,7 +673,7 @@ public class OffLineRead extends Activity{
 					startfile(Integer.toString(fre),filename);
 					creatfile=true;
 				}
-				/*String readMessage="";
+				String readMessage="";
 				for(int i=0;i<msg.arg1;i++){
 			            String hex = Integer.toHexString(readBuf[i] & 0xFF);
 			            if (hex.length() == 1)
@@ -698,8 +698,8 @@ public class OffLineRead extends Activity{
 					}
 					writefile(filename,temp2[i-1]+"\n");
 					writeamount=writeamount+1;
-			    }*/
-				String readMessage = new String(readBuf, 0, msg.arg1);
+			    }
+				/*String readMessage = new String(readBuf, 0, msg.arg1);
 				mConversationArrayAdapter.add(readMessage);
 				String[] temp1=readMessage.split("\n");
 				double temp2[]=new double[temp1.length];
@@ -713,7 +713,7 @@ public class OffLineRead extends Activity{
 					}
 					writefile(filename,temp2[i]+"\n");
 					writeamount=writeamount+1;
-			    }
+			    }*/
 				
 				 int readamountonce=temp2.length;
 				if(calamount+readamountonce<fre*12)

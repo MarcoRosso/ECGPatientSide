@@ -809,7 +809,7 @@ public class OnLineRead extends Activity{
 					startfile(Integer.toString(fre),filename);
 					creatfile=true;
 				}
-				/*String readMessage="";
+				String readMessage="";
 				for(int i=0;i<msg.arg1;i++){
 			            String hex = Integer.toHexString(readBuf[i] & 0xFF);
 			            if (hex.length() == 1)
@@ -841,16 +841,16 @@ public class OnLineRead extends Activity{
 					}
 					writefile(filename,temp2[i-1]+"\n");
 					writeamount=writeamount+1;
-			    }*/
+			    }
 
-				String readMessage = new String(readBuf, 0, msg.arg1);
+				/*String readMessage = new String(readBuf, 0, msg.arg1);
 				mConversationArrayAdapter.add(readMessage);
 				String[] temp1=readMessage.split("\n");
 				double temp2[]=new double[temp1.length];
 				for(int i=0;i<temp1.length;i++){
 		            temp2[i]=Double.parseDouble(temp1[i]);
 		             if(onlineway==1){
-						onlinesend=onlinesend+temp2[i-1]+"\n";
+						onlinesend=onlinesend+temp2[i]+"\n";
 		             }
 					if(writeamount==fre*60){
 						if(onlineway==0){
@@ -863,7 +863,7 @@ public class OnLineRead extends Activity{
 					}
 					writefile(filename,temp2[i]+"\n");
 					writeamount=writeamount+1;
-			    }
+			    }*/
 				
 				if(onlineway==1){
 					sendMsgbywifi(username,onlinesend);
@@ -887,7 +887,7 @@ public class OnLineRead extends Activity{
 							   ecgcal[i-readamountonce]=trans;
 							   }
 					      for(int i=fre*12-readamountonce;i<fre*12;i++){
-								   ecgcal[i]=temp2[readtemp];
+								   ecgcal[i]=temp2[readtemp]; 
 								   readtemp++;
 							   }
 					      calchange=calchange+readamountonce;

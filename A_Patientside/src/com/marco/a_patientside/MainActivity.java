@@ -20,8 +20,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -32,6 +34,7 @@ public class MainActivity extends Activity {
     private EditText passwordEdittext;
     private Button loginbutton;
     private String roomnumber;
+    private long exitTime = 0;
     ProgressDialog pd;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +141,18 @@ public class MainActivity extends Activity {
        System.out.println("diagonalPixels"+diagonalPixels);
        double screenSize = diagonalPixels/(160*density) ;
        System.out.println("screenSize"+screenSize);*/
-        
+        loginbutton.setOnLongClickListener(new OnLongClickListener(){
+
+			@Override
+			public boolean onLongClick(View v) {
+				    Intent intent= new Intent();
+					intent.setClass(MainActivity.this, OffLineRead.class);
+					startActivity(intent);
+	        		finish();
+				return false;
+			}
+        	
+        });
     }
     
 
@@ -160,4 +174,5 @@ public class MainActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }*/
+
 }

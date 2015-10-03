@@ -60,6 +60,7 @@ public class AlertDialog extends Activity{
 				    intent.putExtra("type", type);
 			    	intent.putExtra("latitude", latitude);
 			    	intent.putExtra("longitude", longitude);
+			    	intent.putExtra("address", address);
 			    	intent.setClass(AlertDialog.this,AlertAction.class);
 			    	startActivity(intent);
 		        	finish();
