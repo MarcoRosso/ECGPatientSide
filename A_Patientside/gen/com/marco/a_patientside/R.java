@@ -77,7 +77,6 @@ public final class R {
         public static final int welcome_back=0x7f020034;
     }
     public static final class id {
-        public static final int SecondaryProgress=0x01010000;
         public static final int SurfaceView01=0x7f090030;
         public static final int action_settings=0x7f090068;
         public static final int address=0x7f090010;
